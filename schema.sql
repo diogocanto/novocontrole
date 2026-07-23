@@ -56,39 +56,39 @@ DROP POLICY IF EXISTS "Permitir inserção de transações" ON public.transactio
 DROP POLICY IF EXISTS "Permitir atualização de transações" ON public.transactions;
 DROP POLICY IF EXISTS "Permitir exclusão de transações" ON public.transactions;
 
--- Politicas RLS para Categorias
+-- Politicas RLS para Categorias (Permite acesso para visitantes anônimos e usuários logados)
 CREATE POLICY "Permitir leitura de categorias" 
     ON public.categories FOR SELECT 
-    USING (user_id IS NULL OR auth.uid() = user_id);
+    USING (true);
 
 CREATE POLICY "Permitir inserção de categorias" 
     ON public.categories FOR INSERT 
-    WITH CHECK (user_id IS NULL OR auth.uid() = user_id);
+    WITH CHECK (true);
 
 CREATE POLICY "Permitir atualização de categorias" 
     ON public.categories FOR UPDATE 
-    USING (user_id IS NULL OR auth.uid() = user_id);
+    USING (true);
 
 CREATE POLICY "Permitir exclusão de categorias" 
     ON public.categories FOR DELETE 
-    USING (user_id IS NULL OR auth.uid() = user_id);
+    USING (true);
 
--- Politicas RLS para Transações
+-- Politicas RLS para Transações (Permite acesso para visitantes anônimos e usuários logados)
 CREATE POLICY "Permitir leitura de transações" 
     ON public.transactions FOR SELECT 
-    USING (user_id IS NULL OR auth.uid() = user_id);
+    USING (true);
 
 CREATE POLICY "Permitir inserção de transações" 
     ON public.transactions FOR INSERT 
-    WITH CHECK (user_id IS NULL OR auth.uid() = user_id);
+    WITH CHECK (true);
 
 CREATE POLICY "Permitir atualização de transações" 
     ON public.transactions FOR UPDATE 
-    USING (user_id IS NULL OR auth.uid() = user_id);
+    USING (true);
 
 CREATE POLICY "Permitir exclusão de transações" 
     ON public.transactions FOR DELETE 
-    USING (user_id IS NULL OR auth.uid() = user_id);
+    USING (true);
 
 -- 4. INSERIR CATEGORIAS PADRÃO (user_id é NULL para acesso global)
 INSERT INTO public.categories (name, type, color, icon, budget_limit) VALUES
