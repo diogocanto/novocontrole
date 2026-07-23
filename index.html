@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NovoControle - Finanças Pessoais & Relatórios PDF</title>
+  
+  <!-- Fontes Google & FontAwesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=display" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Estilos Customizados -->
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Bibliotecas Externas (Supabase JS, Chart.js, html2pdf.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+
+  <div id="app-layout">
+    
+    <!-- SIDEBAR DE NAVEGAÇÃO -->
+    <aside class="sidebar">
+      <div>
+        <div class="brand-header">
+          <div class="brand-logo">
+            <i class="fas fa-wallet"></i>
+          </div>
+          <span class="brand-title">NovoControle</span>
+        </div>
+
+        <ul class="nav-menu">
+          <li class="nav-item active">
+            <button id="nav-dashboard">
+              <i class="fas fa-chart-pie"></i>
+              <span>Visão Geral</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button id="nav-transactions">
+              <i class="fas fa-exchange-alt"></i>
+              <span>Transações</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button id="nav-categories">
+              <i class="fas fa-tags"></i>
+              <span>Categorias</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <!-- PERFIL / AUTENTICAÇÃO DO USUÁRIO -->
+        <div class="user-profile-section" id="user-profile-section">
+          <div id="user-info-logged" class="user-info-card" style="display: none;">
+            <div class="user-avatar" id="user-avatar-initials">U</div>
+            <div class="user-details">
+              <span class="user-email" id="user-email-display">usuario@email.com</span>
+              <span class="user-badge"><i class="fas fa-shield-alt"></i> Autenticado</span>
+            </div>
+            <button id="btn-logout" class="btn-icon-logout" title="Sair da Conta">
+              <i class="fas fa-sign-out-alt"></i>
+            </button>
+          </div>
+          <button id="btn-open-auth-modal" class="btn btn-auth-trigger">
+            <i class="fas fa-user-circle"></i>
+            <span>Entrar / Cadastrar</span>
+          </button>
+        </div>
+
+        <button id="supabase-status-btn" class="btn-supabase-status">
+          <span style="display: flex; align-items: center; gap: 8px;">
+            <span id="supabase-status-dot" class="status-dot offline"></span>
+            <span id="supabase-status-text">Modo Local (Demo)</span>
+          </span>
+          <i class="fas fa-cog"></i>
+        </button>
+      </div>
+    </aside>
+
+    <!-- ÁREA PRINCIPAL -->
+    <main class="main-wrapper">
+      
+      <!-- TOP HEADER -->
+      <header class="top-header">
+        <div class="page-title-group">
+          <h1>Controle Financeiro</h1>
+          <p>Acompanhe suas despesas, receitas e porcentagens de gastos por categoria</p>
+        </div>
+
+        <div class="header-actions">
+          <button id="btn-privacy-toggle" class="btn btn-secondary btn-icon" title="Ocultar / Mostrar Valores">
+            <i class="fas fa-eye" id="privacy-icon"></i>
+          </button>
+          <button id="btn-theme-toggle" class="btn btn-secondary btn-icon" title="Alternar Modo Escuro / Claro">
+            <i class="fas fa-moon" id="theme-icon"></i>
+          </button>
+          <button id="btn-open-pdf-modal" class="btn btn-pdf">
+            <i class="fas fa-file-pdf"></i>
+            <span>Exportar PDF</span>
+          </button>
+          <button id="btn-open-cat-modal" class="btn btn-secondary">
+            <i class="fas fa-folder-plus"></i>
+            <span>+ Categoria</span>
+          </button>
+          <button id="btn-open-tx-modal" class="btn btn-primary">
+            <i class="fas fa-plus-circle"></i>
+            <span>+ Transação</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- CARTÕES DE MÉTRICAS -->
+      <section class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-title">Saldo Total</span>
+            <div class="metric-icon-box balance">
+              <i class="fas fa-wallet"></i>
+            </div>
+          </div>
+          <div id="total-balance" class="metric-value">R$ 0,00</div>
+          <span class="metric-badge positive"><i class="fas fa-arrow-up"></i> Atualizado</span>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-title">Receitas do Mês</span>
+            <div class="metric-icon-box income">
+              <i class="fas fa-arrow-down"></i>
+            </div>
+          </div>
+          <div id="total-income" class="metric-value" style="color: var(--accent-green);">R$ 0,00</div>
+          <span class="metric-badge positive"><i class="fas fa-plus"></i> Entradas</span>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-title">Despesas do Mês</span>
+            <div class="metric-icon-box expense">
+              <i class="fas fa-arrow-up"></i>
+            </div>
+          </div>
+          <div id="total-expense" class="metric-value" style="color: var(--accent-red);">R$ 0,00</div>
+          <span class="metric-badge negative"><i class="fas fa-minus"></i> Saídas</span>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-title">Taxa de Economia</span>
+            <div class="metric-icon-box savings">
+              <i class="fas fa-piggy-bank"></i>
+            </div>
+          </div>
+          <div id="savings-ratio" class="metric-value" style="color: var(--accent-cyan);">0.0% guardado</div>
+          <span class="metric-badge neutral"><i class="fas fa-shield-alt"></i> Meta > 20%</span>
+        </div>
+      </section>
+
+      <!-- SEÇÃO DE GRÁFICOS E PORCENTAGENS -->
+      <section class="dashboard-grid">
+        
+        <!-- CARD DE TENDÊNCIA E FLUXO DE CAIXA -->
+        <div class="content-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-chart-bar"></i>
+              Fluxo de Caixa (Últimos Dias)
+            </h2>
+            <div class="timeframe-selector">
+              <button class="timeframe-btn active" data-time="all">Todos</button>
+              <button class="timeframe-btn" data-time="weekly">Semanal</button>
+              <button class="timeframe-btn" data-time="monthly">Mensal</button>
+            </div>
+          </div>
+          <div style="height: 300px; position: relative;">
+            <canvas id="chart-trend"></canvas>
+          </div>
+        </div>
+
+        <!-- CARD DE PORCENTAGENS POR CATEGORIA -->
+        <div class="content-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-chart-pie"></i>
+              Porcentagem de Gastos
+            </h2>
+          </div>
+          
+          <div style="height: 180px; position: relative; margin-bottom: 20px;">
+            <canvas id="chart-categories"></canvas>
+          </div>
+
+          <!-- LISTA DE CATEGORIAS COM PORCENTAGENS -->
+          <div id="category-breakdown-list" class="category-breakdown-list">
+            <!-- Inserido dinamicamente via app.js -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- TABELA DE TRANSAÇÕES -->
+      <section class="content-card transactions-section">
+        <div class="table-controls">
+          <h2 class="card-title">
+            <i class="fas fa-list-ul"></i>
+            Histórico de Transações
+          </h2>
+
+          <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <div class="search-box">
+              <i class="fas fa-search" style="color: var(--text-muted);"></i>
+              <input type="text" id="search-input" placeholder="Buscar por descrição...">
+            </div>
+
+            <select id="filter-category" class="filter-select">
+              <option value="all">Todas as Categorias</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Descrição</th>
+                <th>Categoria</th>
+                <th>Pagamento</th>
+                <th>Tipo</th>
+                <th>Valor</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="transactions-table-body">
+              <!-- Renderizado dinamicamente pelo JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- MODAL: NOVA TRANSAÇÃO -->
+  <div id="modal-transaction" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Adicionar Transação</h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <form id="form-transaction">
+        <div class="form-group">
+          <label for="tx-desc">Descrição</label>
+          <input type="text" id="tx-desc" class="form-control" placeholder="Ex: Supermercado, Aluguel, Salário" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="tx-amount">Valor (R$)</label>
+            <input type="number" step="0.01" id="tx-amount" class="form-control" placeholder="0.00" required>
+          </div>
+          <div class="form-group">
+            <label for="tx-type">Tipo</label>
+            <select id="tx-type" class="form-control">
+              <option value="expense">Despesa (-)</option>
+              <option value="income">Receita (+)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="tx-category">Categoria</label>
+            <select id="tx-category" class="form-control" required>
+              <!-- Dinâmico -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="tx-date">Data</label>
+            <input type="date" id="tx-date" class="form-control" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="tx-payment">Forma de Pagamento</label>
+          <select id="tx-payment" class="form-control">
+            <option value="Pix">Pix</option>
+            <option value="Cartão de Crédito">Cartão de Crédito</option>
+            <option value="Cartão de Débito">Cartão de Débito</option>
+            <option value="Dinheiro">Dinheiro</option>
+            <option value="Transferência">Transferência</option>
+          </select>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-modal-cancel">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar Transação</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: NOVA CATEGORIA -->
+  <div id="modal-category" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Criar Nova Categoria</h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <form id="form-category">
+        <div class="form-group">
+          <label for="cat-name">Nome da Categoria</label>
+          <input type="text" id="cat-name" class="form-control" placeholder="Ex: Viagens, Assinaturas, Cursos" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cat-type">Tipo</label>
+            <select id="cat-type" class="form-control">
+              <option value="expense">Despesa</option>
+              <option value="income">Receita</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="cat-color">Cor da Categoria</label>
+            <input type="color" id="cat-color" class="form-control" value="#6366f1" style="height: 42px; padding: 2px;">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="cat-budget">Limite Orçamentário Mensal (R$)</label>
+          <input type="number" step="0.01" id="cat-budget" class="form-control" placeholder="0.00 (Opcional)">
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-modal-cancel">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar Categoria</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: AUTENTICAÇÃO (LOGIN / REGISTRO) -->
+  <div id="modal-auth" class="modal-overlay">
+    <div class="modal-card auth-card">
+      <div class="modal-header">
+        <div class="auth-header-title">
+          <div class="brand-logo" style="width: 36px; height: 36px; font-size: 1rem;">
+            <i class="fas fa-wallet"></i>
+          </div>
+          <h3>NovoControle</h3>
+        </div>
+        <button class="modal-close">&times;</button>
+      </div>
+
+      <!-- AUTH TABS -->
+      <div class="auth-tabs">
+        <button id="tab-login" class="auth-tab active" type="button">Entrar</button>
+        <button id="tab-register" class="auth-tab" type="button">Criar Conta</button>
+      </div>
+
+      <!-- FORMULARIO LOGIN -->
+      <form id="form-login" class="auth-form">
+        <div id="auth-alert-login" class="auth-alert" style="display: none;"></div>
+        
+        <div class="form-group">
+          <label for="login-email"><i class="fas fa-envelope"></i> E-mail</label>
+          <input type="email" id="login-email" class="form-control" placeholder="seu@email.com" required>
+        </div>
+
+        <div class="form-group">
+          <label for="login-password"><i class="fas fa-lock"></i> Senha</label>
+          <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" id="btn-submit-login" class="btn btn-primary btn-block">
+          <i class="fas fa-sign-in-alt"></i>
+          <span>Acessar Conta</span>
+        </button>
+      </form>
+
+      <!-- FORMULARIO CADASTRO -->
+      <form id="form-register" class="auth-form" style="display: none;">
+        <div id="auth-alert-register" class="auth-alert" style="display: none;"></div>
+        
+        <div class="form-group">
+          <label for="register-email"><i class="fas fa-envelope"></i> E-mail</label>
+          <input type="email" id="register-email" class="form-control" placeholder="seu@email.com" required>
+        </div>
+
+        <div class="form-group">
+          <label for="register-password"><i class="fas fa-lock"></i> Senha (mínimo 6 caracteres)</label>
+          <input type="password" id="register-password" class="form-control" placeholder="••••••••" minlength="6" required>
+        </div>
+
+        <div class="form-group">
+          <label for="register-confirm-password"><i class="fas fa-lock"></i> Confirmar Senha</label>
+          <input type="password" id="register-confirm-password" class="form-control" placeholder="••••••••" minlength="6" required>
+        </div>
+
+        <button type="submit" id="btn-submit-register" class="btn btn-primary btn-block">
+          <i class="fas fa-user-plus"></i>
+          <span>Criar Conta no Supabase</span>
+        </button>
+      </form>
+
+      <div class="auth-footer-note">
+        <span>Ou continue navegando no modo local.</span>
+        <button type="button" id="btn-guest-mode" class="btn-link-guest">Modo Convidado (Demo)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: EXPORTAR PDF -->
+  <div id="modal-pdf" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Gerar Relatório em PDF</h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div style="padding: 10px 0; color: var(--text-secondary); font-size: 0.95rem;">
+        Escolha o período do relatório financeiro contendo totais, porcentagens de gastos por categoria e lista completa de lançamentos:
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px;">
+        <button id="btn-export-weekly-pdf" class="btn btn-secondary" style="flex-direction: column; padding: 20px; text-align: center;">
+          <i class="fas fa-calendar-week" style="font-size: 1.8rem; color: var(--accent-primary); margin-bottom: 8px;"></i>
+          <strong>Relatório Semanal</strong>
+          <span style="font-size: 0.78rem; color: var(--text-muted);">Últimos 7 dias</span>
+        </button>
+
+        <button id="btn-export-monthly-pdf" class="btn btn-secondary" style="flex-direction: column; padding: 20px; text-align: center;">
+          <i class="fas fa-calendar-alt" style="font-size: 1.8rem; color: var(--accent-cyan); margin-bottom: 8px;"></i>
+          <strong>Relatório Mensal</strong>
+          <span style="font-size: 0.78rem; color: var(--text-muted);">Últimos 30 dias</span>
+        </button>
+      </div>
+      <div class="modal-footer" style="margin-top: 24px;">
+        <button type="button" class="btn btn-secondary btn-modal-cancel">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CONFIGURAÇÃO SUPABASE -->
+  <div id="modal-supabase" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Conectar ao Supabase</h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <form id="form-supabase">
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px;">
+          Insira suas credenciais do projeto Supabase. Para criar o banco de dados PostgreSQL escalável, execute o script <code>schema.sql</code> gerado na raiz do projeto no SQL Editor do seu Supabase.
+        </p>
+
+        <div class="form-group">
+          <label for="sp-url">URL do Projeto Supabase</label>
+          <input type="text" id="sp-url" class="form-control" placeholder="https://xyz.supabase.co">
+        </div>
+
+        <div class="form-group">
+          <label for="sp-key">Chave de API Pública (Anon Key)</label>
+          <input type="password" id="sp-key" class="form-control" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6...">
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-modal-cancel">Cancelar (Manter Local)</button>
+          <button type="submit" class="btn btn-primary">Salvar & Conectar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Carregamento dos Scripts da Aplicação em Ordem de Dependência -->
+  <script src="js/supabaseClient.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/pdfGenerator.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
