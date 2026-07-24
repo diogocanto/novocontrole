@@ -870,35 +870,236 @@ body {
   border-bottom: 1px solid #e2e8f0;
 }
 
-/* Mobile Responsive Adjustments */
+/* ====================================================================
+   MOBILE RESPONSIVE SYSTEM
+   ==================================================================== */
+
+/* Mobile Header Bar (Hidden by default on Desktop) */
+.mobile-header {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  width: 100%;
+}
+
+.mobile-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-mobile-toggle,
+.btn-mobile-close {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn-mobile-toggle:hover,
+.btn-mobile-close:hover {
+  background: var(--bg-card-hover);
+  color: var(--accent-primary);
+}
+
+.btn-mobile-close {
+  display: none; /* Only visible inside sidebar on mobile */
+}
+
+/* Sidebar Overlay */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 45;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-normal);
+}
+
+.sidebar-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Tablet & Mobile Media Queries (max-width: 992px) */
+@media (max-width: 992px) {
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobile Media Queries (max-width: 768px) */
 @media (max-width: 768px) {
+  #app-layout {
+    flex-direction: column;
+  }
+
+  .mobile-header {
+    display: flex;
+  }
+
+  .btn-mobile-close {
+    display: flex;
+  }
+
   .sidebar {
+    width: 280px;
+    box-shadow: var(--shadow-md);
     transform: translateX(-100%);
+    z-index: 50;
   }
 
   .sidebar.mobile-open {
     transform: translateX(0);
   }
 
+  .brand-header {
+    justify-content: space-between;
+  }
+
   .main-wrapper {
     margin-left: 0;
-    padding: 20px 16px;
+    padding: 16px 14px;
+    width: 100%;
   }
 
   .top-header {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .page-title-group h1 {
+    font-size: 1.4rem;
+  }
+
+  .page-title-group p {
+    font-size: 0.85rem;
   }
 
   .header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .header-actions .btn {
+    flex: 1 1 calc(50% - 6px);
+    justify-content: center;
+    padding: 10px 12px;
+    font-size: 0.82rem;
+    white-space: nowrap;
+  }
+
+  .header-actions .btn-icon {
+    flex: 0 0 40px;
+  }
+
+  .content-card {
+    padding: 16px;
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .timeframe-selector {
     width: 100%;
     justify-content: space-between;
   }
 
-  .metrics-grid {
-    grid-template-columns: 1fr 1fr;
+  .timeframe-btn {
+    flex: 1;
+    text-align: center;
+  }
+
+  .table-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-box {
+    width: 100%;
+  }
+
+  .filter-select {
+    width: 100%;
+  }
+
+  .data-table th, 
+  .data-table td {
+    padding: 10px 12px;
+    font-size: 0.82rem;
   }
 }
+
+/* Small Mobile Screens (max-width: 480px) */
+@media (max-width: 480px) {
+  .metrics-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .metric-card {
+    padding: 16px;
+  }
+
+  .metric-value {
+    font-size: 1.45rem;
+  }
+
+  .header-actions .btn {
+    flex: 1 1 100%;
+  }
+
+  .header-actions .btn-icon {
+    flex: 0 0 auto;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .modal-card {
+    width: 95%;
+    padding: 20px 16px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-footer {
+    flex-direction: column-reverse;
+  }
+
+  .modal-footer .btn {
+    width: 100%;
+  }
+}
+
 
 /* ====================================================================
    ESTILOS DE AUTENTICAÇÃO E PERFIL DE USUÁRIO

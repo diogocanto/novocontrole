@@ -633,6 +633,51 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  // Controladores do Menu Lateral Mobile (Off-Canvas Drawer)
+  const sidebar = document.getElementById('sidebar');
+  const sidebarOverlay = document.getElementById('sidebar-overlay');
+  const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+  const mobileMenuClose = document.getElementById('mobile-menu-close');
+  const mobileQuickTxBtn = document.getElementById('mobile-quick-tx-btn');
+
+  function openMobileSidebar() {
+    if (sidebar) sidebar.classList.add('mobile-open');
+    if (sidebarOverlay) sidebarOverlay.classList.add('active');
+  }
+
+  function closeMobileSidebar() {
+    if (sidebar) sidebar.classList.remove('mobile-open');
+    if (sidebarOverlay) sidebarOverlay.classList.remove('active');
+  }
+
+  if (mobileMenuToggle) {
+    mobileMenuToggle.addEventListener('click', openMobileSidebar);
+  }
+
+  if (mobileMenuClose) {
+    mobileMenuClose.addEventListener('click', closeMobileSidebar);
+  }
+
+  if (sidebarOverlay) {
+    sidebarOverlay.addEventListener('click', closeMobileSidebar);
+  }
+
+  // Fechar sidebar ao clicar em qualquer item do menu no mobile
+  document.querySelectorAll('.nav-menu button').forEach(navBtn => {
+    navBtn.addEventListener('click', () => {
+      closeMobileSidebar();
+    });
+  });
+
+  // Botão rápido de adicionar transação no cabeçalho mobile
+  if (mobileQuickTxBtn) {
+    mobileQuickTxBtn.addEventListener('click', () => {
+      document.getElementById('tx-date').value = new Date().toISOString().split('T')[0];
+      openModal(elements.modalTransaction);
+    });
+  }
+
   // Inicializa o app
   await loadData();
 });
+
