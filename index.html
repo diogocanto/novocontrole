@@ -379,9 +379,12 @@
           <div class="brand-logo" style="width: 36px; height: 36px; font-size: 1rem;">
             <i class="fas fa-wallet"></i>
           </div>
-          <h3>NovoControle</h3>
+          <div>
+            <h3>NovoControle</h3>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">Faça login ou cadastre-se para acessar o sistema</p>
+          </div>
         </div>
-        <button class="modal-close">&times;</button>
+        <button class="modal-close" id="modal-auth-close">&times;</button>
       </div>
 
       <!-- AUTH TABS -->
@@ -436,8 +439,8 @@
       </form>
 
       <div class="auth-footer-note">
-        <span>Ou continue navegando no modo local.</span>
-        <button type="button" id="btn-guest-mode" class="btn-link-guest">Modo Convidado (Demo)</button>
+        <i class="fas fa-shield-alt" style="color: var(--accent-green); font-size: 1.1rem;"></i>
+        <span>Acesso restrito e exclusivo para usuários cadastrados.</span>
       </div>
     </div>
   </div>

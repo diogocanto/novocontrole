@@ -93,26 +93,42 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // 1. CARREGAMENTO INICIAL DE DADOS
   async function loadData() {
-    state.categories = await window.financeService.getCategories();
-    state.transactions = await window.financeService.getTransactions();
-    
     updateSupabaseStatusUI();
-    await checkAuthState();
-    populateCategoryDropdowns();
-    renderApp();
+    const isAuthenticated = await checkAuthState();
+
+    if (isAuthenticated) {
+      state.categories = await window.financeService.getCategories();
+      state.transactions = await window.financeService.getTransactions();
+      populateCategoryDropdowns();
+      renderApp();
+    }
   }
 
   // Verifica estado de autenticação do usuário
   async function checkAuthState() {
+    const appLayout = document.getElementById('app-layout');
     const user = await window.financeService.getCurrentUser();
+
     if (user && user.email) {
+      // Usuário Autenticado: libera a interface e esconde modal de auth
+      if (appLayout) appLayout.classList.remove('auth-hidden');
+      if (elements.modalAuth) {
+        elements.modalAuth.classList.remove('active', 'forced-auth');
+      }
       if (elements.btnOpenAuthModal) elements.btnOpenAuthModal.style.display = 'none';
       if (elements.userInfoLogged) elements.userInfoLogged.style.display = 'flex';
       if (elements.userEmailDisplay) elements.userEmailDisplay.textContent = user.email;
       if (elements.userAvatarInitials) elements.userAvatarInitials.textContent = user.email.charAt(0).toUpperCase();
+      return true;
     } else {
-      if (elements.btnOpenAuthModal) elements.btnOpenAuthModal.style.display = 'flex';
+      // Usuário NÃO Autenticado: oculta o app e força a modal de login/cadastro
+      if (appLayout) appLayout.classList.add('auth-hidden');
       if (elements.userInfoLogged) elements.userInfoLogged.style.display = 'none';
+      if (elements.btnOpenAuthModal) elements.btnOpenAuthModal.style.display = 'flex';
+      if (elements.modalAuth) {
+        elements.modalAuth.classList.add('active', 'forced-auth');
+      }
+      return false;
     }
   }
 
@@ -463,12 +479,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  if (elements.btnGuestMode) {
-    elements.btnGuestMode.addEventListener('click', () => {
-      closeModal(elements.modalAuth);
-    });
-  }
-
   // Alternância de Abas (Entrar vs Criar Conta)
   if (elements.tabLogin && elements.tabRegister) {
     elements.tabLogin.addEventListener('click', () => {
@@ -616,6 +626,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   function closeModal(modal) {
+    if (modal === elements.modalAuth && elements.modalAuth.classList.contains('forced-auth')) {
+      return; // Impede o fechamento se o usuário não estiver logado
+    }
     if (modal) modal.classList.remove('active');
   }
 

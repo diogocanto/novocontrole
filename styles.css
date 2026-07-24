@@ -1282,22 +1282,25 @@ body {
   font-size: 0.8rem;
   color: var(--text-muted);
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  flex-direction: row;
+  justify-content: center;
+  gap: 8px;
   align-items: center;
 }
 
-.btn-link-guest {
-  background: transparent;
-  border: none;
-  color: var(--accent-cyan);
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: underline;
-  font-size: 0.82rem;
+/* Estado de Autenticação Forçada (Bloqueio Total) */
+#app-layout.auth-hidden {
+  display: none !important;
 }
 
-.btn-link-guest:hover {
-  color: #ffffff;
+.modal-overlay#modal-auth.forced-auth {
+  background: rgba(9, 13, 22, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  pointer-events: auto;
+}
+
+.modal-overlay#modal-auth.forced-auth #modal-auth-close {
+  display: none !important;
 }
 
