@@ -571,10 +571,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         elements.authAlertRegister.style.display = 'block';
       } finally {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> <span>Criar Conta no Supabase</span>';
+        submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> <span>Criar Conta</span>';
       }
     });
   }
+
+  // Alternância de Visibilidade da Senha (Olho Mágico)
+  document.querySelectorAll('.btn-toggle-password').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const input = btn.parentElement ? btn.parentElement.querySelector('input') : null;
+      const icon = btn.querySelector('i');
+      if (input) {
+        if (input.type === 'password') {
+          input.type = 'text';
+          if (icon) icon.className = 'fas fa-eye-slash';
+        } else {
+          input.type = 'password';
+          if (icon) icon.className = 'fas fa-eye';
+        }
+      }
+    });
+  });
 
   // Logout de Usuário
   if (elements.btnLogout) {
