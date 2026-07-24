@@ -518,7 +518,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       } catch (err) {
         console.error('Erro ao realizar login:', err);
         elements.authAlertLogin.className = 'auth-alert error';
-        elements.authAlertLogin.textContent = err.message || 'Falha ao realizar login. Verifique seu e-mail e senha.';
+
+        let errorMessage = err.message || 'Falha ao realizar login. Verifique seu e-mail e senha.';
+        if (errorMessage.includes('Invalid login credentials')) {
+          errorMessage = 'E-mail ou senha incorretos. Se você acabou de criar sua conta, verifique se confirmou o e-mail na sua caixa de entrada (ou desative a confirmação de e-mail no painel do Supabase).';
+        } else if (errorMessage.includes('Email not confirmed')) {
+          errorMessage = 'Seu e-mail ainda não foi confirmado. Acesse sua caixa de entrada e clique no link de confirmação enviado pelo Supabase.';
+        }
+
+        elements.authAlertLogin.textContent = errorMessage;
         elements.authAlertLogin.style.display = 'block';
       } finally {
         submitBtn.disabled = false;
@@ -558,16 +566,28 @@ document.addEventListener('DOMContentLoaded', async () => {
             await loadData();
           }, 1200);
         } else {
-          elements.authAlertRegister.textContent = 'Conta criada com sucesso! Caso o Supabase exija confirmação de e-mail, verifique sua caixa de entrada antes de fazer login.';
+          elements.authAlertRegister.textContent = 'Conta criada com sucesso! Um e-mail de confirmação foi enviado. Verifique sua caixa de entrada (e SPAM) para confirmar a conta antes de fazer login.';
+          const loginEmailInput = document.getElementById('login-email');
+          if (loginEmailInput) loginEmailInput.value = email;
           setTimeout(() => {
             elements.tabLogin.click();
-          }, 2500);
+          }, 3500);
         }
         elements.authAlertRegister.style.display = 'block';
       } catch (err) {
         console.error('Erro ao cadastrar usuário:', err);
         elements.authAlertRegister.className = 'auth-alert error';
-        elements.authAlertRegister.textContent = err.message || 'Erro ao criar conta no Supabase.';
+
+        let errorMessage = err.message || 'Erro ao criar conta no Supabase.';
+        if (errorMessage.includes('email rate limit exceeded')) {
+          errorMessage = 'Limite de envio de e-mails do Supabase excedido. Por favor, aguarde alguns minutos ou desative a opção "Confirm email" no painel do Supabase.';
+        } else if (errorMessage.includes('User already registered')) {
+          errorMessage = 'Este e-mail já está cadastrado no sistema. Tente fazer login ou use a opção de redefinição.';
+        } else if (errorMessage.includes('Password should be at least')) {
+          errorMessage = 'A senha deve conter no mínimo 6 caracteres.';
+        }
+
+        elements.authAlertRegister.textContent = errorMessage;
         elements.authAlertRegister.style.display = 'block';
       } finally {
         submitBtn.disabled = false;
