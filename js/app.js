@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const isConnected = window.financeService.isSupabaseConnected;
     if (isConnected) {
       elements.supabaseStatusDot.className = 'status-dot';
-      elements.supabaseStatusText.textContent = 'Supabase Conectado';
+      elements.supabaseStatusText.textContent = 'Conectado';
     } else {
       elements.supabaseStatusDot.className = 'status-dot offline';
       elements.supabaseStatusText.textContent = 'Modo Local (Demo)';
@@ -412,7 +412,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const success = window.financeService.saveCredentials(url, key);
     if (success) {
-      alert('Credenciais salvas com sucesso! Supabase Conectado.');
+      alert('Credenciais salvas com sucesso! Conectado.');
     } else {
       alert('Modo Local (Demo) ativado.');
     }
