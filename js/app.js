@@ -403,7 +403,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('tx-edit-id').value = t.id;
         document.getElementById('tx-desc').value = t.description || '';
         document.getElementById('tx-amount').value = t.amount || '';
-        document.getElementById('tx-type').value = t.type || 'expense';
+        setTxType(t.type || 'expense');
         document.getElementById('tx-category').value = t.category_id || (state.categories[0] ? state.categories[0].id : '');
         document.getElementById('tx-date').value = t.date ? t.date.split('T')[0] : new Date().toISOString().split('T')[0];
         document.getElementById('tx-payment').value = t.payment_method || 'Pix';
@@ -521,6 +521,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  // -------------------------------------------------------
+  // SELETOR DE TIPO: DESPESA / RECEITA
+  // -------------------------------------------------------
+  function setTxType(type) {
+    const hiddenInput = document.getElementById('tx-type');
+    const btnExpense  = document.getElementById('btn-type-expense');
+    const btnIncome   = document.getElementById('btn-type-income');
+    if (!hiddenInput || !btnExpense || !btnIncome) return;
+    hiddenInput.value = type;
+    if (type === 'income') {
+      btnExpense.classList.remove('active');
+      btnIncome.classList.add('active');
+    } else {
+      btnIncome.classList.remove('active');
+      btnExpense.classList.add('active');
+    }
+  }
+
+  const btnTypeExpense = document.getElementById('btn-type-expense');
+  const btnTypeIncome  = document.getElementById('btn-type-income');
+  if (btnTypeExpense) btnTypeExpense.addEventListener('click', () => setTxType('expense'));
+  if (btnTypeIncome)  btnTypeIncome.addEventListener('click',  () => setTxType('income'));
+
   // Submissão do Formulário de Transação (Criar / Editar)
   elements.formTransaction.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -555,6 +578,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     elements.formTransaction.reset();
     document.getElementById('tx-edit-id').value = '';
+    setTxType('expense');
     closeModal(elements.modalTransaction);
     await loadData();
   });
@@ -1253,6 +1277,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       document.getElementById('tx-edit-id').value = '';
       elements.formTransaction.reset();
       document.getElementById('tx-date').value = new Date().toISOString().split('T')[0];
+      setTxType('expense');
       const modalTitle = document.getElementById('modal-tx-title');
       const submitBtn = document.getElementById('btn-submit-tx');
       if (modalTitle) modalTitle.textContent = 'Adicionar Transação';
@@ -1370,7 +1395,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Botão rápido de adicionar transação no cabeçalho mobile
   if (mobileQuickTxBtn) {
     mobileQuickTxBtn.addEventListener('click', () => {
+      document.getElementById('tx-edit-id').value = '';
+      elements.formTransaction.reset();
       document.getElementById('tx-date').value = new Date().toISOString().split('T')[0];
+      setTxType('expense');
+      const modalTitle = document.getElementById('modal-tx-title');
+      const submitBtn = document.getElementById('btn-submit-tx');
+      if (modalTitle) modalTitle.textContent = 'Adicionar Transação';
+      if (submitBtn) submitBtn.textContent = 'Salvar Transação';
       openModal(elements.modalTransaction);
     });
   }

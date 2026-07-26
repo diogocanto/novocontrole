@@ -1839,4 +1839,123 @@ input[type="date"] {
   line-height: 1.4;
 }
 
+/* =============================================
+   SELETOR DE TIPO: DESPESA / RECEITA
+   ============================================= */
+.tx-type-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
 
+.tx-type-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 18px 12px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border-color);
+  background: var(--bg-card);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.tx-type-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+}
+
+.tx-type-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* Despesa */
+.tx-type-expense::before {
+  background: radial-gradient(ellipse at center, rgba(239, 68, 68, 0.18) 0%, transparent 70%);
+}
+.tx-type-expense:hover {
+  border-color: rgba(239, 68, 68, 0.45);
+}
+.tx-type-expense:hover::before {
+  opacity: 1;
+}
+.tx-type-expense.active {
+  border-color: var(--accent-red);
+  background: rgba(239, 68, 68, 0.12);
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.25);
+}
+.tx-type-expense.active::before {
+  opacity: 1;
+}
+.tx-type-expense .tx-type-icon {
+  color: var(--accent-red);
+}
+.tx-type-expense.active .tx-type-icon {
+  filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.7));
+}
+
+/* Receita */
+.tx-type-income::before {
+  background: radial-gradient(ellipse at center, rgba(16, 185, 129, 0.18) 0%, transparent 70%);
+}
+.tx-type-income:hover {
+  border-color: rgba(16, 185, 129, 0.45);
+}
+.tx-type-income:hover::before {
+  opacity: 1;
+}
+.tx-type-income.active {
+  border-color: var(--accent-green);
+  background: rgba(16, 185, 129, 0.12);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.25);
+}
+.tx-type-income.active::before {
+  opacity: 1;
+}
+.tx-type-income .tx-type-icon {
+  color: var(--accent-green);
+}
+.tx-type-income.active .tx-type-icon {
+  filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.7));
+}
+
+/* Ícone, label e subtexto */
+.tx-type-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+  transition: filter var(--transition-normal);
+}
+
+.tx-type-label {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
+}
+
+.tx-type-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+/* Responsivo em telas muito pequenas */
+@media (max-width: 360px) {
+  .tx-type-btn {
+    padding: 14px 8px;
+  }
+  .tx-type-icon {
+    font-size: 1.3rem;
+  }
+  .tx-type-label {
+    font-size: 0.9rem;
+  }
+}
