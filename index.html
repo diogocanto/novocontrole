@@ -4,9 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <!-- viewport-fit=cover é essencial para notch/Dynamic Island no iOS -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>NovoControle - Finanças Pessoais &amp; Relatórios PDF</title>
-  <meta name="description" content="Controle suas finanças pessoais de forma simples e inteligente. Gerencie despesas, receitas, categorias e exporte relatórios em PDF.">
+  <meta name="description"
+    content="Controle suas finanças pessoais de forma simples e inteligente. Gerencie despesas, receitas, categorias e exporte relatórios em PDF.">
 
   <!-- iOS &amp; PWA Optimization Meta Tags (obrigatórias para Safari/Apple) -->
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -37,7 +39,8 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;family=Space+Grotesk:wght@500;700&amp;display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    crossorigin="anonymous">
 
   <!-- Estilos Customizados -->
   <link rel="stylesheet" href="styles.css">
@@ -238,7 +241,8 @@
             <i class="fas fa-fire" style="color: var(--accent-red);"></i>
             Onde Mais Gastei Nesta Semana (Últimos 7 Dias)
           </h2>
-          <span class="badge-read-only" style="margin-left: auto; font-size: 0.8rem; background: rgba(99, 102, 241, 0.15); color: var(--accent-primary); padding: 4px 10px; border-radius: 20px; font-weight: 600;">
+          <span class="badge-read-only"
+            style="margin-left: auto; font-size: 0.8rem; background: rgba(99, 102, 241, 0.15); color: var(--accent-primary); padding: 4px 10px; border-radius: 20px; font-weight: 600;">
             <i class="fas fa-calendar-week"></i> Análise Semanal Ativa
           </span>
         </div>
@@ -247,7 +251,8 @@
           <!-- 1. MAIOR GASTO INDIVIDUAL -->
           <div class="weekly-card highlight-single">
             <div class="weekly-card-header">
-              <span class="weekly-card-label"><i class="fas fa-trophy" style="color: #f59e0b;"></i> Maior Gasto Individual</span>
+              <span class="weekly-card-label"><i class="fas fa-trophy" style="color: #f59e0b;"></i> Maior Gasto
+                Individual</span>
             </div>
             <div id="weekly-top-single-amount" class="weekly-card-value">R$ 0,00</div>
             <div id="weekly-top-single-desc" class="weekly-card-subtext">Nenhum gasto registrado esta semana</div>
@@ -257,7 +262,8 @@
           <!-- 2. CATEGORIA CAMPEÃ DA SEMANA -->
           <div class="weekly-card highlight-category">
             <div class="weekly-card-header">
-              <span class="weekly-card-label"><i class="fas fa-chart-pie" style="color: var(--accent-primary);"></i> Categoria Campeã</span>
+              <span class="weekly-card-label"><i class="fas fa-chart-pie" style="color: var(--accent-primary);"></i>
+                Categoria Campeã</span>
             </div>
             <div id="weekly-top-cat-amount" class="weekly-card-value">R$ 0,00</div>
             <div id="weekly-top-cat-name" class="weekly-card-subtext">Nenhuma categoria</div>
@@ -267,7 +273,8 @@
           <!-- 3. DIA COM MAIOR PICO DE DESPESAS -->
           <div class="weekly-card highlight-day">
             <div class="weekly-card-header">
-              <span class="weekly-card-label"><i class="fas fa-calendar-day" style="color: var(--accent-cyan);"></i> Dia de Maior Pico</span>
+              <span class="weekly-card-label"><i class="fas fa-calendar-day" style="color: var(--accent-cyan);"></i> Dia
+                de Maior Pico</span>
             </div>
             <div id="weekly-top-day-name" class="weekly-card-value" style="font-size: 1.35rem;">--</div>
             <div id="weekly-top-day-amount" class="weekly-card-subtext">Total: R$ 0,00</div>
@@ -277,7 +284,8 @@
 
         <!-- RANKING TOP 5 GASTOS DA SEMANA -->
         <div style="margin-top: 20px;">
-          <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+          <h3
+            style="font-size: 0.95rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
             <i class="fas fa-list-ol" style="color: var(--accent-primary);"></i> Ranking dos Maiores Gastos da Semana
           </h3>
           <div id="weekly-top-ranking-list" class="weekly-ranking-list">
@@ -478,12 +486,14 @@
     <div class="modal-card modal-lg">
       <div class="modal-header">
         <div style="display: flex; align-items: center; gap: 10px;">
-          <div class="brand-logo" style="width: 36px; height: 36px; font-size: 1rem; background: var(--accent-primary-gradient);">
+          <div class="brand-logo"
+            style="width: 36px; height: 36px; font-size: 1rem; background: var(--accent-primary-gradient);">
             <i class="fas fa-tags"></i>
           </div>
           <div>
             <h3>Gerenciar Categorias</h3>
-            <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">Edite ou exclua suas categorias personalizadas</p>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">Edite ou exclua suas categorias
+              personalizadas</p>
           </div>
         </div>
         <button class="modal-close">&times;</button>
@@ -683,12 +693,14 @@
     <div class="modal-card modal-lg">
       <div class="modal-header">
         <div style="display: flex; align-items: center; gap: 10px;">
-          <div class="brand-logo" style="width: 36px; height: 36px; font-size: 1rem; background: var(--accent-primary-gradient);">
+          <div class="brand-logo"
+            style="width: 36px; height: 36px; font-size: 1rem; background: var(--accent-primary-gradient);">
             <i class="fas fa-university"></i>
           </div>
           <div>
             <h3>Linkar Banco & Importar Gastos</h3>
-            <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">Extratos OFX, CSV, Copiar/Colar e Open Finance</p>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">Extratos OFX, CSV, Copiar/Colar e
+              Open Finance</p>
           </div>
         </div>
         <button class="modal-close">&times;</button>
@@ -699,7 +711,8 @@
         <i class="fas fa-shield-alt" style="font-size: 1.2rem; color: var(--accent-green);"></i>
         <div>
           <strong>Acesso 100% Somente Leitura (Read-Only)</strong>
-          <p>O NovoControle apenas realiza a leitura dos lançamentos de extrato para organizar suas estatísticas. Nenhuma movimentação ou pagamento é realizado na sua conta bancária.</p>
+          <p>O NovoControle apenas realiza a leitura dos lançamentos de extrato para organizar suas estatísticas.
+            Nenhuma movimentação ou pagamento é realizado na sua conta bancária.</p>
         </div>
       </div>
 
@@ -718,7 +731,8 @@
         <div class="form-group">
           <label><i class="fas fa-cloud-upload-alt"></i> Upload de Arquivo OFX ou CSV do Banco</label>
           <div class="import-dropzone" id="import-dropzone">
-            <i class="fas fa-file-invoice-dollar" style="font-size: 2.2rem; color: var(--accent-primary); margin-bottom: 8px;"></i>
+            <i class="fas fa-file-invoice-dollar"
+              style="font-size: 2.2rem; color: var(--accent-primary); margin-bottom: 8px;"></i>
             <p>Arraste seu arquivo <strong>.OFX</strong> ou <strong>.CSV</strong> aqui ou clique para selecionar</p>
             <input type="file" id="bank-file-input" accept=".ofx,.csv,.txt" style="display: none;">
             <!-- onclick inline removido: listener adicionado via JS para compatibilidade com CSP do Safari -->
@@ -734,7 +748,8 @@
 
         <div class="form-group">
           <label for="bank-paste-input"><i class="fas fa-paste"></i> Copiar & Colar Extrato do App Bancário</label>
-          <textarea id="bank-paste-input" class="form-control" rows="4" placeholder="Cole aqui o texto copiado da fatura ou extrato do seu banco (ex: 22/07 Supermercado R$ 150,00)..."></textarea>
+          <textarea id="bank-paste-input" class="form-control" rows="4"
+            placeholder="Cole aqui o texto copiado da fatura ou extrato do seu banco (ex: 22/07 Supermercado R$ 150,00)..."></textarea>
         </div>
 
         <button type="button" id="btn-parse-paste" class="btn btn-secondary btn-block">
@@ -745,7 +760,8 @@
       <!-- PAINEL 2: OPEN FINANCE BANCOS CONECTADOS -->
       <div id="panel-bank-openfinance" class="bank-panel" style="display: none;">
         <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 16px;">
-          Selecione o seu banco para consultar e sincronizar os lançamentos recentes via Open Finance em modo <strong>Somente Leitura</strong>:
+          Selecione o seu banco para consultar e sincronizar os lançamentos recentes via Open Finance em modo
+          <strong>Somente Leitura</strong>:
         </p>
 
         <div class="banks-grid">
@@ -788,10 +804,12 @@
       </div>
 
       <!-- REVISÃO DAS TRANSAÇÕES ENCONTRADAS -->
-      <div id="import-preview-container" style="display: none; margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 16px;">
+      <div id="import-preview-container"
+        style="display: none; margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 16px;">
         <div style="display: flex; justify-content: space-between; align-align: center; margin-bottom: 12px;">
           <h4 style="font-size: 1rem; color: var(--text-primary);">
-            <i class="fas fa-check-circle" style="color: var(--accent-green);"></i> Transações Encontradas (<span id="import-count">0</span>)
+            <i class="fas fa-check-circle" style="color: var(--accent-green);"></i> Transações Encontradas (<span
+              id="import-count">0</span>)
           </h4>
           <span style="font-size: 0.8rem; color: var(--text-muted);">Marque as que deseja salvar</span>
         </div>
