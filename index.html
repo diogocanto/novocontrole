@@ -395,25 +395,17 @@
             required>
         </div>
 
-        <!-- SELETOR DE TIPO: DESPESA ou RECEITA -->
-        <div class="tx-type-selector">
-          <button type="button" id="btn-type-expense" class="tx-type-btn tx-type-expense active" data-type="expense" onclick="window.setTxTypeGlobal && window.setTxTypeGlobal('expense')">
-            <span class="tx-type-icon"><i class="fas fa-arrow-up"></i></span>
-            <span class="tx-type-label">Despesa</span>
-            <span class="tx-type-sub">Saída de dinheiro</span>
-          </button>
-          <button type="button" id="btn-type-income" class="tx-type-btn tx-type-income" data-type="income" onclick="window.setTxTypeGlobal && window.setTxTypeGlobal('income')">
-            <span class="tx-type-icon"><i class="fas fa-arrow-down"></i></span>
-            <span class="tx-type-label">Receita</span>
-            <span class="tx-type-sub">Entrada de dinheiro</span>
-          </button>
-        </div>
-        <input type="hidden" id="tx-type" value="expense">
-
         <div class="form-row">
           <div class="form-group">
             <label for="tx-amount">Valor (R$)</label>
             <input type="number" step="0.01" id="tx-amount" class="form-control" placeholder="0.00" required>
+          </div>
+          <div class="form-group">
+            <label for="tx-type">Tipo</label>
+            <select id="tx-type" class="form-control">
+              <option value="expense">Despesa (-)</option>
+              <option value="income">Receita (+)</option>
+            </select>
           </div>
         </div>
 

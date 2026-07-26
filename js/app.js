@@ -572,17 +572,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   // SELETOR DE TIPO: DESPESA / RECEITA
   // -------------------------------------------------------
   function setTxType(type) {
-    const hiddenInput = document.getElementById('tx-type');
+    const typeElem = document.getElementById('tx-type');
+    if (typeElem) typeElem.value = type;
     const btnExpense  = document.getElementById('btn-type-expense');
     const btnIncome   = document.getElementById('btn-type-income');
-    if (!hiddenInput || !btnExpense || !btnIncome) return;
-    hiddenInput.value = type;
-    if (type === 'income') {
-      btnExpense.classList.remove('active');
-      btnIncome.classList.add('active');
-    } else {
-      btnIncome.classList.remove('active');
-      btnExpense.classList.add('active');
+    if (btnExpense && btnIncome) {
+      if (type === 'income') {
+        btnExpense.classList.remove('active');
+        btnIncome.classList.add('active');
+      } else {
+        btnIncome.classList.remove('active');
+        btnExpense.classList.add('active');
+      }
     }
   }
 
