@@ -487,7 +487,7 @@ class FinanceService {
     // LocalStorage Fallback
     let txs = await this.getTransactions();
     txs = txs.filter(t => t.id !== id);
-    localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(txs));
+    safeStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(txs));
     return true;
   }
 }

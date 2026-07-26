@@ -3,10 +3,12 @@
 
 <head>
   <meta charset="UTF-8">
+  <!-- viewport-fit=cover é essencial para notch/Dynamic Island no iOS -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>NovoControle - Finanças Pessoais & Relatórios PDF</title>
+  <title>NovoControle - Finanças Pessoais &amp; Relatórios PDF</title>
+  <meta name="description" content="Controle suas finanças pessoais de forma simples e inteligente. Gerencie despesas, receitas, categorias e exporte relatórios em PDF.">
 
-  <!-- iOS & PWA Optimization Meta Tags -->
+  <!-- iOS &amp; PWA Optimization Meta Tags (obrigatórias para Safari/Apple) -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="NovoControle">
@@ -15,29 +17,40 @@
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#090d16">
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f1f5f9">
   <meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
+  <!-- Previne que o Safari salve formulários de senhas incorretamente -->
+  <meta name="autocomplete" content="off">
 
-  <!-- PWA Manifest & Icons -->
+  <!-- PWA Manifest &amp; Icons -->
   <link rel="manifest" href="manifest.json">
-  <link rel="icon" type="image/png" sizes="192x192" href="icon.png">
+  <!-- apple-touch-icon: usado pelo Safari ao adicionar à Tela de Início -->
   <link rel="apple-touch-icon" href="icon.png">
   <link rel="apple-touch-icon" sizes="180x180" href="icon.png">
   <link rel="apple-touch-icon" sizes="152x152" href="icon.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icon.png">
 
-  <!-- Fontes Google & FontAwesome Icons -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Fontes Google (carregadas uma única vez aqui no HTML, removido o @import do CSS) -->
+  <!-- crossorigin="anonymous" necessário para preconnect funcionar corretamente -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin="anonymous">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
   <link
-    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=display"
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;family=Space+Grotesk:wght@500;700&amp;display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
 
   <!-- Estilos Customizados -->
   <link rel="stylesheet" href="styles.css">
 
-  <!-- Bibliotecas Externas (Supabase JS, Chart.js, html2pdf.js) -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <!--
+    Bibliotecas Externas carregadas com defer:
+    - defer: não bloqueia o parser HTML (crítico para Safari/iOS)
+    - Os scripts executam após o HTML ser parseado, mas antes do DOMContentLoaded
+    - Ordem de execução preservada com defer
+  -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 
 <body>
@@ -708,7 +721,8 @@
             <i class="fas fa-file-invoice-dollar" style="font-size: 2.2rem; color: var(--accent-primary); margin-bottom: 8px;"></i>
             <p>Arraste seu arquivo <strong>.OFX</strong> ou <strong>.CSV</strong> aqui ou clique para selecionar</p>
             <input type="file" id="bank-file-input" accept=".ofx,.csv,.txt" style="display: none;">
-            <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('bank-file-input').click()" style="margin-top: 10px;">
+            <!-- onclick inline removido: listener adicionado via JS para compatibilidade com CSP do Safari -->
+            <button type="button" id="btn-select-bank-file" class="btn btn-secondary btn-sm" style="margin-top: 10px;">
               Selecionar Arquivo do Computador
             </button>
           </div>
@@ -810,12 +824,13 @@
     </div>
   </div>
 
-  <!-- Carregamento dos Scripts da Aplicação em Ordem de Dependência -->
-  <script src="js/supabaseClient.js"></script>
-  <script src="js/bankService.js"></script>
-  <script src="js/charts.js"></script>
-  <script src="js/pdfGenerator.js"></script>
-  <script src="js/app.js"></script>
+  <!-- Scripts da Aplicação (defer garante execução após Supabase, Chart.js e html2pdf do head) -->
+  <!-- Ordem de execução preservada com defer: supabaseClient → bankService → charts → pdfGenerator → app -->
+  <script defer src="js/supabaseClient.js"></script>
+  <script defer src="js/bankService.js"></script>
+  <script defer src="js/charts.js"></script>
+  <script defer src="js/pdfGenerator.js"></script>
+  <script defer src="js/app.js"></script>
 </body>
 
 </html>

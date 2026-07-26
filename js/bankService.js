@@ -34,8 +34,12 @@ class BankService {
   /**
    * Sugere uma categoria baseada no texto da descrição do lançamento
    */
-  suggestCategory(description, defaultCategories = []) {
-    if (!description) return defaultCategories[0]?.id || 'cat-7';
+  suggestCategory(description, defaultCategories) {
+    if (!defaultCategories) defaultCategories = [];
+    if (!description) {
+      var firstCat = defaultCategories[0];
+      return firstCat ? firstCat.id : 'cat-7';
+    }
     const lowerDesc = description.toLowerCase();
 
     for (const item of this.categoryKeywords) {
@@ -49,8 +53,10 @@ class BankService {
     }
 
     // Padrão: Compras Gerais ou primeira de despesa
-    const defaultExpense = defaultCategories.find(c => c.type === 'expense');
-    return defaultExpense ? defaultExpense.id : (defaultCategories[0]?.id || 'cat-7');
+    var defaultExpense = defaultCategories.find(function(c) { return c.type === 'expense'; });
+    if (defaultExpense) return defaultExpense.id;
+    var firstCat = defaultCategories[0];
+    return firstCat ? firstCat.id : 'cat-7';
   }
 
   /**

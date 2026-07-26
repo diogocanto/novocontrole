@@ -1,3 +1,35 @@
+// Polyfill de smooth scroll para Safari iOS < 15.4
+// iOS não suportava behavior:'smooth' antes da versão 15.4 do Safari
+if (!('scrollBehavior' in document.documentElement.style)) {
+  window._smoothScrollTo = function(element, top) {
+    if (element === window) {
+      window.scrollTo(0, top || 0);
+    } else if (element) {
+      element.scrollTop = top || 0;
+    }
+  };
+} else {
+  window._smoothScrollTo = null; // nativo disponível
+}
+
+function safeSmoothScrollTo(top) {
+  if (window._smoothScrollTo !== null && window._smoothScrollTo !== undefined) {
+    window._smoothScrollTo(window, top);
+  } else {
+    window.scrollTo({ top: top || 0, behavior: 'smooth' });
+  }
+}
+
+function safeSmoothScrollIntoView(element) {
+  if (!element) return;
+  if (window._smoothScrollTo !== null && window._smoothScrollTo !== undefined) {
+    var rect = element.getBoundingClientRect();
+    window.scrollTo(0, rect.top + window.pageYOffset - 80);
+  } else {
+    element.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
 function parseDateSafely(dateStr) {
   if (!dateStr) return new Date();
   if (dateStr instanceof Date) return dateStr;
@@ -1006,6 +1038,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  // Botão "Selecionar Arquivo" — listener via JS (onclick inline removido para compatibilidade com Safari CSP)
+  var btnSelectBankFile = document.getElementById('btn-select-bank-file');
+  if (btnSelectBankFile && bankFileInput) {
+    btnSelectBankFile.addEventListener('click', function() {
+      bankFileInput.click();
+    });
+  }
+
   // Drag & Drop no Dropzone
   if (importDropzone) {
     importDropzone.addEventListener('dragover', (e) => {
@@ -1246,16 +1286,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const navTransactions = document.getElementById('nav-transactions');
   if (navTransactions) {
-    navTransactions.addEventListener('click', () => {
-      const txSection = document.querySelector('.transactions-section');
-      if (txSection) txSection.scrollIntoView({ behavior: 'smooth' });
+    navTransactions.addEventListener('click', function() {
+      var txSection = document.querySelector('.transactions-section');
+      if (txSection) safeSmoothScrollIntoView(txSection);
     });
   }
 
   const navDashboard = document.getElementById('nav-dashboard');
   if (navDashboard) {
-    navDashboard.addEventListener('click', () => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    navDashboard.addEventListener('click', function() {
+      safeSmoothScrollTo(0);
     });
   }
 
