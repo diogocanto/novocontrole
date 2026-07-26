@@ -847,19 +847,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Abertura/Fechamento de Modais
-  document.getElementById('btn-open-tx-modal').addEventListener('click', () => {
-    document.getElementById('tx-date').value = new Date().toISOString().split('T')[0];
-    openModal(elements.modalTransaction);
-  });
+  // Abertura/Fechamento de Modais (verificações seguras contra null)
+  const legacyTxBtn = document.getElementById('btn-open-tx-modal');
+  if (legacyTxBtn) {
+    legacyTxBtn.addEventListener('click', () => {
+      document.getElementById('tx-date').value = new Date().toISOString().split('T')[0];
+      openModal(elements.modalTransaction);
+    });
+  }
 
-  document.getElementById('btn-open-cat-modal').addEventListener('click', () => {
-    openModal(elements.modalCategory);
-  });
+  const legacyCatBtn = document.getElementById('btn-open-cat-modal');
+  if (legacyCatBtn) {
+    legacyCatBtn.addEventListener('click', () => {
+      openModal(elements.modalCategory);
+    });
+  }
 
-  document.getElementById('btn-open-pdf-modal').addEventListener('click', () => {
-    openModal(elements.modalPdf);
-  });
+  const legacyPdfBtn = document.getElementById('btn-open-pdf-modal');
+  if (legacyPdfBtn) {
+    legacyPdfBtn.addEventListener('click', () => {
+      openModal(elements.modalPdf);
+    });
+  }
 
   // ==========================================================================
   // CÁLCULO & EXIBIÇÃO: ONDE MAIS GASTEI NESTA SEMANA (ÚLTIMOS 7 DIAS)
