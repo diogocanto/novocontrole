@@ -1,6 +1,6 @@
 // NovoControle Service Worker - PWA & Cross-Platform Offline Support
 // Compatível com Safari/WebKit iOS 12+, Chrome, Firefox, Edge
-const CACHE_NAME = 'novocontrole-v5';
+const CACHE_NAME = 'novocontrole-v6';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

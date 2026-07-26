@@ -51,7 +51,47 @@ function safeGetItem(key) {
 
 function safeSetItem(key, val) {
   try { localStorage.setItem(key, val); } catch (e) {}
-}
+// Função Global à Prova de Falhas para Abertura Rápida dos Modais de Despesa/Receita
+window.openTxModalWithType = function(type) {
+  try {
+    const modal = document.getElementById('modal-transaction');
+    const form = document.getElementById('form-transaction');
+    const txEditId = document.getElementById('tx-edit-id');
+    const txDate = document.getElementById('tx-date');
+    const modalTitle = document.getElementById('modal-tx-title');
+    const submitBtn = document.getElementById('btn-submit-tx');
+    const hiddenType = document.getElementById('tx-type');
+    const btnExpense = document.getElementById('btn-type-expense');
+    const btnIncome = document.getElementById('btn-type-income');
+
+    if (txEditId) txEditId.value = '';
+    if (form) form.reset();
+    if (txDate) txDate.value = new Date().toISOString().split('T')[0];
+    
+    // Atualiza tipo (Despesa / Receita)
+    if (hiddenType) hiddenType.value = type;
+    if (type === 'income') {
+      if (btnExpense) btnExpense.classList.remove('active');
+      if (btnIncome) btnIncome.classList.add('active');
+      if (modalTitle) modalTitle.textContent = 'Adicionar Receita';
+    } else {
+      if (btnIncome) btnIncome.classList.remove('active');
+      if (btnExpense) btnExpense.classList.add('active');
+      if (modalTitle) modalTitle.textContent = 'Adicionar Despesa';
+    }
+    if (submitBtn) submitBtn.textContent = 'Salvar';
+
+    // Força a exibição do modal com máxima especificidade
+    if (modal) {
+      modal.classList.add('active');
+      modal.style.opacity = '1';
+      modal.style.visibility = 'visible';
+      modal.style.display = 'flex';
+    }
+  } catch (e) {
+    console.error('Erro ao abrir modal:', e);
+  }
+};
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Estado da Aplicação
@@ -1355,14 +1395,28 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   function openModal(modal) {
-    if (modal) modal.classList.add('active');
+    if (modal) {
+      modal.classList.add('active');
+      modal.style.opacity = '1';
+      modal.style.visibility = 'visible';
+      if (modal.id === 'modal-transaction') {
+        modal.style.display = 'flex';
+      }
+    }
   }
 
   function closeModal(modal) {
     if (modal === elements.modalAuth && elements.modalAuth.classList.contains('forced-auth')) {
       return; // Impede o fechamento se o usuário não estiver logado
     }
-    if (modal) modal.classList.remove('active');
+    if (modal) {
+      modal.classList.remove('active');
+      modal.style.opacity = '';
+      modal.style.visibility = '';
+      if (modal.id === 'modal-transaction') {
+        modal.style.display = '';
+      }
+    }
   }
 
   // Funções Auxiliares

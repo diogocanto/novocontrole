@@ -71,7 +71,7 @@
         </div>
         <span class="brand-title">NovoControle</span>
       </div>
-      <button id="mobile-quick-tx-btn" class="btn btn-primary btn-icon" title="Nova Transação">
+      <button id="mobile-quick-tx-btn" class="btn btn-primary btn-icon" title="Nova Transação" onclick="window.openTxModalWithType && window.openTxModalWithType('expense')">
         <i class="fas fa-plus"></i>
       </button>
     </header>
@@ -180,11 +180,11 @@
             <i class="fas fa-folder-plus"></i>
             <span>+ Categoria</span>
           </button>
-          <button id="btn-open-expense-modal" class="btn btn-tx-expense">
+          <button id="btn-open-expense-modal" class="btn btn-tx-expense" onclick="window.openTxModalWithType && window.openTxModalWithType('expense')">
             <i class="fas fa-arrow-up"></i>
             <span>+ Despesa</span>
           </button>
-          <button id="btn-open-income-modal" class="btn btn-tx-income">
+          <button id="btn-open-income-modal" class="btn btn-tx-income" onclick="window.openTxModalWithType && window.openTxModalWithType('income')">
             <i class="fas fa-arrow-down"></i>
             <span>+ Receita</span>
           </button>
