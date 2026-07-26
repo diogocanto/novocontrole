@@ -1271,20 +1271,34 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   // Botões do Cabeçalho e Navegação Lateral
+  function openTxModalWithType(type) {
+    document.getElementById('tx-edit-id').value = '';
+    elements.formTransaction.reset();
+    document.getElementById('tx-date').value = new Date().toISOString().split('T')[0];
+    setTxType(type);
+    const modalTitle = document.getElementById('modal-tx-title');
+    const submitBtn = document.getElementById('btn-submit-tx');
+    if (modalTitle) modalTitle.textContent = type === 'income' ? 'Adicionar Receita' : 'Adicionar Despesa';
+    if (submitBtn) submitBtn.textContent = 'Salvar';
+    openModal(elements.modalTransaction);
+  }
+
+  const btnOpenExpenseModal = document.getElementById('btn-open-expense-modal');
+  if (btnOpenExpenseModal) {
+    btnOpenExpenseModal.addEventListener('click', () => openTxModalWithType('expense'));
+  }
+
+  const btnOpenIncomeModal = document.getElementById('btn-open-income-modal');
+  if (btnOpenIncomeModal) {
+    btnOpenIncomeModal.addEventListener('click', () => openTxModalWithType('income'));
+  }
+
+  // Compatibilidade: botão legado btn-open-tx-modal (caso ainda exista)
   const btnOpenTxModal = document.getElementById('btn-open-tx-modal');
   if (btnOpenTxModal) {
-    btnOpenTxModal.addEventListener('click', () => {
-      document.getElementById('tx-edit-id').value = '';
-      elements.formTransaction.reset();
-      document.getElementById('tx-date').value = new Date().toISOString().split('T')[0];
-      setTxType('expense');
-      const modalTitle = document.getElementById('modal-tx-title');
-      const submitBtn = document.getElementById('btn-submit-tx');
-      if (modalTitle) modalTitle.textContent = 'Adicionar Transação';
-      if (submitBtn) submitBtn.textContent = 'Salvar Transação';
-      openModal(elements.modalTransaction);
-    });
+    btnOpenTxModal.addEventListener('click', () => openTxModalWithType('expense'));
   }
+
 
   const btnOpenCatModal = document.getElementById('btn-open-cat-modal');
   if (btnOpenCatModal) {
@@ -1394,17 +1408,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Botão rápido de adicionar transação no cabeçalho mobile
   if (mobileQuickTxBtn) {
-    mobileQuickTxBtn.addEventListener('click', () => {
-      document.getElementById('tx-edit-id').value = '';
-      elements.formTransaction.reset();
-      document.getElementById('tx-date').value = new Date().toISOString().split('T')[0];
-      setTxType('expense');
-      const modalTitle = document.getElementById('modal-tx-title');
-      const submitBtn = document.getElementById('btn-submit-tx');
-      if (modalTitle) modalTitle.textContent = 'Adicionar Transação';
-      if (submitBtn) submitBtn.textContent = 'Salvar Transação';
-      openModal(elements.modalTransaction);
-    });
+    mobileQuickTxBtn.addEventListener('click', () => openTxModalWithType('expense'));
   }
 
   // Registro do Service Worker para suporte PWA

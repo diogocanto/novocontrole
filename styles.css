@@ -332,6 +332,38 @@ button, input, select, textarea, a, .btn {
   background: rgba(239, 68, 68, 0.25);
 }
 
+/* Botões de ação rápida: Despesa e Receita */
+.btn-tx-expense {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  font-weight: 700;
+}
+
+.btn-tx-expense:hover {
+  background: rgba(239, 68, 68, 0.28);
+  border-color: rgba(239, 68, 68, 0.6);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.25);
+  color: #fca5a5;
+}
+
+.btn-tx-income {
+  background: rgba(16, 185, 129, 0.15);
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  font-weight: 700;
+}
+
+.btn-tx-income:hover {
+  background: rgba(16, 185, 129, 0.28);
+  border-color: rgba(16, 185, 129, 0.6);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.25);
+  color: #6ee7b7;
+}
+
+
 .btn-icon {
   width: 40px;
   height: 40px;

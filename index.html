@@ -180,9 +180,13 @@
             <i class="fas fa-folder-plus"></i>
             <span>+ Categoria</span>
           </button>
-          <button id="btn-open-tx-modal" class="btn btn-primary">
-            <i class="fas fa-plus-circle"></i>
-            <span>+ Transação</span>
+          <button id="btn-open-expense-modal" class="btn btn-tx-expense">
+            <i class="fas fa-arrow-up"></i>
+            <span>+ Despesa</span>
+          </button>
+          <button id="btn-open-income-modal" class="btn btn-tx-income">
+            <i class="fas fa-arrow-down"></i>
+            <span>+ Receita</span>
           </button>
         </div>
       </header>
@@ -644,6 +648,7 @@
         Escolha o período do relatório financeiro contendo totais, porcentagens de gastos por categoria e lista completa
         de lançamentos:
       </div>
+
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px;">
         <button id="btn-export-weekly-pdf" class="btn btn-secondary"
           style="flex-direction: column; padding: 20px; text-align: center;">
