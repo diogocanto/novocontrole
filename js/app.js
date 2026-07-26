@@ -57,38 +57,36 @@ window.setTxTypeGlobal = function(type) {
     const hiddenType = document.getElementById('tx-type');
     const btnExpense = document.getElementById('btn-type-expense');
     const btnIncome = document.getElementById('btn-type-income');
-    const modalTitle = document.getElementById('modal-tx-title');
     if (hiddenType) hiddenType.value = type;
     if (type === 'income') {
       if (btnExpense) btnExpense.classList.remove('active');
       if (btnIncome) btnIncome.classList.add('active');
-      if (modalTitle) modalTitle.textContent = 'Adicionar Receita';
     } else {
       if (btnIncome) btnIncome.classList.remove('active');
       if (btnExpense) btnExpense.classList.add('active');
-      if (modalTitle) modalTitle.textContent = 'Adicionar Despesa';
     }
   } catch (e) {
     console.error('Erro ao definir tipo:', e);
   }
 };
 
-// Função Global à Prova de Falhas para Abertura Rápida dos Modais de Despesa/Receita
-window.openTxModalWithType = function(type) {
+// Função Global à Prova de Falhas para Abertura do Modal de Transação
+window.openTxModalWithType = function(defaultType = 'expense') {
   try {
     const modal = document.getElementById('modal-transaction');
     const form = document.getElementById('form-transaction');
     const txEditId = document.getElementById('tx-edit-id');
     const txDate = document.getElementById('tx-date');
+    const modalTitle = document.getElementById('modal-tx-title');
     const submitBtn = document.getElementById('btn-submit-tx');
 
     if (txEditId) txEditId.value = '';
     if (form) form.reset();
     if (txDate) txDate.value = new Date().toISOString().split('T')[0];
     
-    // Atualiza tipo (Despesa / Receita)
-    if (window.setTxTypeGlobal) window.setTxTypeGlobal(type);
-    if (submitBtn) submitBtn.textContent = 'Salvar';
+    if (window.setTxTypeGlobal) window.setTxTypeGlobal(defaultType);
+    if (modalTitle) modalTitle.textContent = 'Adicionar Transação';
+    if (submitBtn) submitBtn.textContent = 'Salvar Transação';
 
     // Força a exibição do modal com máxima especificidade
     if (modal) {
@@ -1341,17 +1339,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     openModal(elements.modalTransaction);
   }
 
-  const btnOpenExpenseModal = document.getElementById('btn-open-expense-modal');
-  if (btnOpenExpenseModal) {
-    btnOpenExpenseModal.addEventListener('click', () => openTxModalWithType('expense'));
-  }
-
-  const btnOpenIncomeModal = document.getElementById('btn-open-income-modal');
-  if (btnOpenIncomeModal) {
-    btnOpenIncomeModal.addEventListener('click', () => openTxModalWithType('income'));
-  }
-
-  // Compatibilidade: botão legado btn-open-tx-modal (caso ainda exista)
   const btnOpenTxModal = document.getElementById('btn-open-tx-modal');
   if (btnOpenTxModal) {
     btnOpenTxModal.addEventListener('click', () => openTxModalWithType('expense'));
@@ -1448,8 +1435,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
   const mobileMenuClose = document.getElementById('mobile-menu-close');
   const mobileQuickTxBtn = document.getElementById('mobile-quick-tx-btn');
-  const mobileBtnExpense = document.getElementById('mobile-btn-expense');
-  const mobileBtnIncome = document.getElementById('mobile-btn-income');
 
   function openMobileSidebar() {
     if (sidebar) sidebar.classList.add('mobile-open');
@@ -1480,15 +1465,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   });
 
-  // Botões rápidos de adicionar transação no cabeçalho mobile
+  // Botão rápido de adicionar transação no cabeçalho mobile
   if (mobileQuickTxBtn) {
     mobileQuickTxBtn.addEventListener('click', () => openTxModalWithType('expense'));
-  }
-  if (mobileBtnExpense) {
-    mobileBtnExpense.addEventListener('click', () => openTxModalWithType('expense'));
-  }
-  if (mobileBtnIncome) {
-    mobileBtnIncome.addEventListener('click', () => openTxModalWithType('income'));
   }
 
   // Registro do Service Worker para suporte PWA

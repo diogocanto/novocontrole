@@ -71,16 +71,9 @@
         </div>
         <span class="brand-title">NovoControle</span>
       </div>
-      <div class="mobile-tx-actions" style="display: flex; gap: 6px;">
-        <button id="mobile-btn-expense" class="btn btn-tx-expense" style="padding: 6px 10px; font-size: 0.78rem;" title="Nova Despesa" onclick="window.openTxModalWithType && window.openTxModalWithType('expense')">
-          <i class="fas fa-arrow-up"></i>
-          <span>Despesa</span>
-        </button>
-        <button id="mobile-btn-income" class="btn btn-tx-income" style="padding: 6px 10px; font-size: 0.78rem;" title="Nova Receita" onclick="window.openTxModalWithType && window.openTxModalWithType('income')">
-          <i class="fas fa-arrow-down"></i>
-          <span>Receita</span>
-        </button>
-      </div>
+      <button id="mobile-quick-tx-btn" class="btn btn-primary btn-icon" title="Nova Transação" onclick="window.openTxModalWithType && window.openTxModalWithType('expense')">
+        <i class="fas fa-plus"></i>
+      </button>
     </header>
 
     <!-- OVERLAY DE FUNDO DO MENU LATERAL -->
@@ -187,13 +180,9 @@
             <i class="fas fa-folder-plus"></i>
             <span>+ Categoria</span>
           </button>
-          <button id="btn-open-expense-modal" class="btn btn-tx-expense" onclick="window.openTxModalWithType && window.openTxModalWithType('expense')">
-            <i class="fas fa-arrow-up"></i>
-            <span>+ Despesa</span>
-          </button>
-          <button id="btn-open-income-modal" class="btn btn-tx-income" onclick="window.openTxModalWithType && window.openTxModalWithType('income')">
-            <i class="fas fa-arrow-down"></i>
-            <span>+ Receita</span>
+          <button id="btn-open-tx-modal" class="btn btn-primary" onclick="window.openTxModalWithType && window.openTxModalWithType('expense')">
+            <i class="fas fa-plus-circle"></i>
+            <span>+ Transação</span>
           </button>
         </div>
       </header>
