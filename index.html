@@ -71,9 +71,16 @@
         </div>
         <span class="brand-title">NovoControle</span>
       </div>
-      <button id="mobile-quick-tx-btn" class="btn btn-primary btn-icon" title="Nova Transação" onclick="window.openTxModalWithType && window.openTxModalWithType('expense')">
-        <i class="fas fa-plus"></i>
-      </button>
+      <div class="mobile-tx-actions" style="display: flex; gap: 6px;">
+        <button id="mobile-btn-expense" class="btn btn-tx-expense" style="padding: 6px 10px; font-size: 0.78rem;" title="Nova Despesa" onclick="window.openTxModalWithType && window.openTxModalWithType('expense')">
+          <i class="fas fa-arrow-up"></i>
+          <span>Despesa</span>
+        </button>
+        <button id="mobile-btn-income" class="btn btn-tx-income" style="padding: 6px 10px; font-size: 0.78rem;" title="Nova Receita" onclick="window.openTxModalWithType && window.openTxModalWithType('income')">
+          <i class="fas fa-arrow-down"></i>
+          <span>Receita</span>
+        </button>
+      </div>
     </header>
 
     <!-- OVERLAY DE FUNDO DO MENU LATERAL -->
@@ -401,12 +408,12 @@
 
         <!-- SELETOR DE TIPO: DESPESA ou RECEITA -->
         <div class="tx-type-selector">
-          <button type="button" id="btn-type-expense" class="tx-type-btn tx-type-expense active" data-type="expense">
+          <button type="button" id="btn-type-expense" class="tx-type-btn tx-type-expense active" data-type="expense" onclick="window.setTxTypeGlobal && window.setTxTypeGlobal('expense')">
             <span class="tx-type-icon"><i class="fas fa-arrow-up"></i></span>
             <span class="tx-type-label">Despesa</span>
             <span class="tx-type-sub">Saída de dinheiro</span>
           </button>
-          <button type="button" id="btn-type-income" class="tx-type-btn tx-type-income" data-type="income">
+          <button type="button" id="btn-type-income" class="tx-type-btn tx-type-income" data-type="income" onclick="window.setTxTypeGlobal && window.setTxTypeGlobal('income')">
             <span class="tx-type-icon"><i class="fas fa-arrow-down"></i></span>
             <span class="tx-type-label">Receita</span>
             <span class="tx-type-sub">Entrada de dinheiro</span>
