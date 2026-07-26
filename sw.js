@@ -1,9 +1,10 @@
 // NovoControle Service Worker
-const CACHE_NAME = 'novocontrole-v1';
+const CACHE_NAME = 'novocontrole-v2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './styles.css',
+  './icon.png',
   './js/app.js',
   './js/supabaseClient.js',
   './js/charts.js',
