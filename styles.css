@@ -593,6 +593,13 @@ button, input, select, textarea, a, .btn {
   gap: 12px;
 }
 
+.table-filters {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
 .search-box {
   display: flex;
   align-items: center;
@@ -1621,6 +1628,94 @@ button, input, select, textarea, a, .btn {
   transform: translateY(-2px);
   border-color: var(--bank-color, var(--accent-primary));
   background: rgba(255, 255, 255, 0.07);
+}
+
+/* ====================================================================
+   RESPONSIVIDADE: GRÁFICOS, TABELA E CONTROLES (MOBILE)
+   ==================================================================== */
+
+/* Tablet intermediário (768px e abaixo) */
+@media (max-width: 768px) {
+
+  /* Card header do Fluxo de Caixa: título e seletor de período em coluna */
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .timeframe-selector {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .timeframe-btn {
+    flex: 1;
+    text-align: center;
+  }
+
+  /* Controles da tabela: barra de busca e filtro empilhados */
+  .table-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .table-filters {
+    flex-direction: column;
+  }
+
+  .search-box {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .filter-select {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Tabela de transações: ocultar colunas menos importantes */
+  .data-table th:nth-child(4),
+  .data-table td:nth-child(4) {
+    display: none; /* Oculta coluna "Pagamento" em mobile */
+  }
+}
+
+/* Mobile pequeno (480px e abaixo) */
+@media (max-width: 480px) {
+
+  /* Ocultar mais colunas na tabela para caber na tela */
+  .data-table th:nth-child(3),
+  .data-table td:nth-child(3) {
+    display: none; /* Oculta coluna "Categoria" em telas muito pequenas */
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 10px 8px;
+    font-size: 0.82rem;
+  }
+
+  /* Forçar scroll horizontal apenas quando necessário */
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .data-table {
+    min-width: 360px;
+  }
+
+  /* Ajustar o .content-card para menos padding em mobile */
+  .content-card {
+    padding: 16px;
+  }
+
+  /* Ajustar altura do gráfico em mobile */
+  .dashboard-grid > .content-card > div[style*="height: 300px"] {
+    height: auto !important;
+    min-height: 200px;
+  }
 }
 
 /* ====================================================================
