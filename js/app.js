@@ -1317,6 +1317,42 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  // Inicialização de Recursos e Suporte iOS / PWA
+  function initIOSFeatures() {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+    
+    const navItemIOS = document.getElementById('nav-item-ios-install');
+    const btnOpenIOSInstall = document.getElementById('btn-open-ios-install');
+    const modalIOSInstall = document.getElementById('modal-ios-install');
+
+    if (navItemIOS) {
+      if (isIOS && !isStandalone) {
+        navItemIOS.style.display = 'block';
+      } else if (!isStandalone) {
+        // Exibe opção de instalação para conveniência
+        navItemIOS.style.display = 'block';
+      }
+    }
+
+    if (btnOpenIOSInstall && modalIOSInstall) {
+      btnOpenIOSInstall.addEventListener('click', () => {
+        openModal(modalIOSInstall);
+      });
+    }
+  }
+
+  // Registro do Service Worker para suporte PWA no iOS e Android
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(err => {
+        console.warn('Falha ao registrar Service Worker:', err);
+      });
+    });
+  }
+
+  initIOSFeatures();
+
   // Inicializa o app
   await loadData();
 });

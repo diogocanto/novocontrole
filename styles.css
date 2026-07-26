@@ -1595,3 +1595,112 @@ body {
   background: rgba(255, 255, 255, 0.07);
 }
 
+/* ====================================================================
+   OTIMIZAÇÕES E SUPORTE ESPECÍFICO PARA IOS (IPHONE / IPAD / SAFARI)
+   ==================================================================== */
+
+/* Global iOS Touch & Selection Fixes */
+html, body {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+/* Permitir seleção em campos de texto e tabelas */
+input, textarea, select, .data-table, .metric-value {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Evitar zoom automático incômodo do iOS Safari ao focar inputs (< 16px causa zoom no iOS) */
+@media (max-width: 768px) {
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  input[type="password"],
+  input[type="date"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Safe Area Insets (Notch, Dynamic Island e Barra Inferior do iOS) */
+@supports (padding: env(safe-area-inset-top)) {
+  .mobile-header {
+    padding-top: max(12px, calc(8px + env(safe-area-inset-top)));
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+
+  .sidebar {
+    padding-top: max(24px, calc(16px + env(safe-area-inset-top)));
+    padding-bottom: max(24px, calc(16px + env(safe-area-inset-bottom)));
+    padding-left: max(16px, env(safe-area-inset-left));
+  }
+
+  .main-wrapper {
+    padding-bottom: max(24px, calc(16px + env(safe-area-inset-bottom)));
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+
+  .modal-card {
+    padding-bottom: max(20px, calc(16px + env(safe-area-inset-bottom)));
+  }
+}
+
+/* Smooth inertia scrolling para iOS */
+.table-container,
+.category-breakdown-list,
+.modal-card {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Suporte aos seletores nativos de data em modo escuro no iOS */
+input[type="date"] {
+  color-scheme: dark;
+}
+[data-theme="light"] input[type="date"] {
+  color-scheme: light;
+}
+
+/* Estilos do Modal de Instalação iOS */
+.ios-install-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.ios-step-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+}
+
+.ios-step-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--accent-gradient);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+.ios-step-text {
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+

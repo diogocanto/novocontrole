@@ -3,8 +3,20 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>NovoControle - Finanças Pessoais & Relatórios PDF</title>
+
+  <!-- iOS & PWA Optimization Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="NovoControle">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#090d16">
+  <meta name="format-detection" content="telephone=no">
+
+  <!-- PWA Manifest & Apple Icon -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%236366f1'><rect width='512' height='512' rx='128' fill='%23090d16'/><path d='M400 160H112c-17.7 0-32 14.3-32 32v224c0 17.7 14.3 32 32 32h288c17.7 0 32-14.3 32-32V192c0-17.7-14.3-32-32-32zm-48 160c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32z' fill='%236366f1'/></svg>">
 
   <!-- Fontes Google & FontAwesome Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -84,6 +96,12 @@
             <button id="nav-bank-sync">
               <i class="fas fa-university"></i>
               <span>Bancos (Leitura)</span>
+            </button>
+          </li>
+          <li class="nav-item" id="nav-item-ios-install" style="display: none;">
+            <button id="btn-open-ios-install" style="color: var(--accent-cyan);">
+              <i class="fab fa-apple"></i>
+              <span>Instalar no iPhone</span>
             </button>
           </li>
         </ul>
@@ -793,6 +811,50 @@
 
       <div class="modal-footer" id="default-bank-modal-footer">
         <button type="button" class="btn btn-secondary btn-modal-cancel">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL INSTRUÇÕES INSTALAÇÃO NO IOS -->
+  <div id="modal-ios-install" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 style="display: flex; align-items: center; gap: 10px;">
+          <i class="fab fa-apple" style="color: var(--text-primary); font-size: 1.4rem;"></i>
+          Instalar no iPhone / iPad
+        </h3>
+        <button id="modal-ios-install-close" class="btn-modal-close btn-modal-cancel" aria-label="Fechar">&times;</button>
+      </div>
+      <div style="padding: 14px 0;">
+        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 16px; line-height: 1.5;">
+          Adicione o <strong>NovoControle</strong> à sua Tela de Início para usar como um aplicativo nativo no seu iPhone sem barras do navegador:
+        </p>
+        
+        <div class="ios-install-steps">
+          <div class="ios-step-item">
+            <div class="ios-step-num">1</div>
+            <div class="ios-step-text">
+              Toque no botão <strong>Compartilhar</strong> <i class="fas fa-share-from-square" style="color: var(--accent-primary);"></i> na barra do Safari.
+            </div>
+          </div>
+          
+          <div class="ios-step-item">
+            <div class="ios-step-num">2</div>
+            <div class="ios-step-text">
+              Role para baixo e selecione <strong>Adicionar à Tela de Início</strong> <i class="far fa-plus-square" style="color: var(--accent-green);"></i>.
+            </div>
+          </div>
+
+          <div class="ios-step-item">
+            <div class="ios-step-num">3</div>
+            <div class="ios-step-text">
+              Toque em <strong>Adicionar</strong> no canto superior direito.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary btn-modal-cancel">Entendi!</button>
       </div>
     </div>
   </div>
