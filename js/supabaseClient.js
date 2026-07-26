@@ -10,6 +10,34 @@ const STORAGE_KEYS = {
   CATEGORIES: 'novo_controle_categories_v1'
 };
 
+// Safe Storage Wrapper com fallback em memória para iOS Safari (Navegação Privada / Restrições Iframe)
+const memoryStorage = {};
+const safeStorage = {
+  getItem(key) {
+    try {
+      return localStorage.getItem(key);
+    } catch (e) {
+      console.warn('⚠️ LocalStorage inacessível (Safari Privado):', e);
+      return memoryStorage[key] || null;
+    }
+  },
+  setItem(key, value) {
+    try {
+      localStorage.setItem(key, value);
+    } catch (e) {
+      console.warn('⚠️ LocalStorage não pôde ser gravado, salvando em memória:', e);
+      memoryStorage[key] = value;
+    }
+  },
+  removeItem(key) {
+    try {
+      localStorage.removeItem(key);
+    } catch (e) {
+      delete memoryStorage[key];
+    }
+  }
+};
+
 // Categorias iniciais padrão caso rode em modo local
 const DEFAULT_CATEGORIES = [
   { id: 'cat-1', name: 'Alimentação', type: 'expense', color: '#ef4444', icon: 'utensils', budget_limit: 1500 },
@@ -87,8 +115,8 @@ class FinanceService {
   }
 
   initSupabaseClient() {
-    const url = localStorage.getItem(STORAGE_KEYS.SUPABASE_URL) || DEFAULT_SUPABASE_URL;
-    const key = localStorage.getItem(STORAGE_KEYS.SUPABASE_KEY) || DEFAULT_SUPABASE_KEY;
+    const url = safeStorage.getItem(STORAGE_KEYS.SUPABASE_URL) || DEFAULT_SUPABASE_URL;
+    const key = safeStorage.getItem(STORAGE_KEYS.SUPABASE_KEY) || DEFAULT_SUPABASE_KEY;
 
     if (url && key && window.supabase) {
       try {
@@ -106,8 +134,8 @@ class FinanceService {
 
   saveCredentials(url, key) {
     if (!url || !key) return false;
-    localStorage.setItem(STORAGE_KEYS.SUPABASE_URL, url.trim());
-    localStorage.setItem(STORAGE_KEYS.SUPABASE_KEY, key.trim());
+    safeStorage.setItem(STORAGE_KEYS.SUPABASE_URL, url.trim());
+    safeStorage.setItem(STORAGE_KEYS.SUPABASE_KEY, key.trim());
     this.initSupabaseClient();
     return this.isSupabaseConnected;
   }
@@ -199,9 +227,9 @@ class FinanceService {
     }
 
     // Fallback LocalStorage
-    const local = localStorage.getItem(STORAGE_KEYS.CATEGORIES);
+    const local = safeStorage.getItem(STORAGE_KEYS.CATEGORIES);
     if (!local) {
-      localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(DEFAULT_CATEGORIES));
+      safeStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(DEFAULT_CATEGORIES));
       return DEFAULT_CATEGORIES;
     }
     return JSON.parse(local);
@@ -248,7 +276,7 @@ class FinanceService {
     };
     const categories = await this.getCategories();
     categories.push(newCat);
-    localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(categories));
+    safeStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(categories));
     return newCat;
   }
 
@@ -285,7 +313,7 @@ class FinanceService {
         color: category.color || '#6366f1',
         budget_limit: parseFloat(category.budget_limit) || 0
       };
-      localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(categories));
+      safeStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(categories));
       return categories[index];
     }
     return category;
@@ -307,7 +335,7 @@ class FinanceService {
     // LocalStorage Fallback
     let categories = await this.getCategories();
     categories = categories.filter(c => c.id !== id);
-    localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(categories));
+    safeStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(categories));
     return true;
   }
 
@@ -326,9 +354,9 @@ class FinanceService {
     }
 
     // LocalStorage Fallback
-    const local = localStorage.getItem(STORAGE_KEYS.TRANSACTIONS);
+    const local = safeStorage.getItem(STORAGE_KEYS.TRANSACTIONS);
     if (!local) {
-      localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(DEFAULT_TRANSACTIONS));
+      safeStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(DEFAULT_TRANSACTIONS));
       return DEFAULT_TRANSACTIONS;
     }
     return JSON.parse(local);
@@ -385,7 +413,7 @@ class FinanceService {
 
     const txs = await this.getTransactions();
     txs.unshift(newTx);
-    localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(txs));
+    safeStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(txs));
     return newTx;
   }
 
@@ -435,7 +463,7 @@ class FinanceService {
         payment_method: transaction.payment_method || 'Pix',
         notes: transaction.notes || ''
       };
-      localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(txs));
+      safeStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(txs));
       return txs[index];
     }
     return transaction;

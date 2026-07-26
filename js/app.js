@@ -1,7 +1,25 @@
-/**
- * MAIN APP CONTROLLER
- * Gerenciador principal de estado, eventos da interface e cálculos de finanças
- */
+function parseDateSafely(dateStr) {
+  if (!dateStr) return new Date();
+  if (dateStr instanceof Date) return dateStr;
+  const cleanStr = String(dateStr).split('T')[0];
+  const parts = cleanStr.split('-');
+  if (parts.length === 3) {
+    const y = parseInt(parts[0], 10);
+    const m = parseInt(parts[1], 10) - 1;
+    const d = parseInt(parts[2], 10);
+    if (!isNaN(y) && !isNaN(m) && !isNaN(d)) return new Date(y, m, d);
+  }
+  const d = new Date(dateStr);
+  return isNaN(d.getTime()) ? new Date() : d;
+}
+
+function safeGetItem(key) {
+  try { return localStorage.getItem(key); } catch (e) { return null; }
+}
+
+function safeSetItem(key, val) {
+  try { localStorage.setItem(key, val); } catch (e) {}
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Estado da Aplicação
@@ -12,14 +30,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     filterType: 'all',      // 'all', 'expense', 'income'
     filterCategory: 'all',
     searchQuery: '',
-    currentTheme: localStorage.getItem('novo_controle_theme') || 'dark',
-    hideValues: localStorage.getItem('novo_controle_hide_values') === 'true'
+    currentTheme: safeGetItem('novo_controle_theme') || 'dark',
+    hideValues: safeGetItem('novo_controle_hide_values') === 'true'
   };
 
   // Aplica tema salvo
   function updateThemeUI() {
     document.documentElement.setAttribute('data-theme', state.currentTheme);
-    localStorage.setItem('novo_controle_theme', state.currentTheme);
+    safeSetItem('novo_controle_theme', state.currentTheme);
     const themeIcon = document.getElementById('theme-icon');
     if (themeIcon) {
       if (state.currentTheme === 'light') {
@@ -32,7 +50,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Aplica olho mágico (privacidade de valores)
   function updatePrivacyUI() {
-    localStorage.setItem('novo_controle_hide_values', state.hideValues);
+    safeSetItem('novo_controle_hide_values', state.hideValues);
     const privacyIcon = document.getElementById('privacy-icon');
     if (privacyIcon) {
       if (state.hideValues) {
@@ -202,7 +220,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   function getFilteredTransactions() {
     const now = new Date();
     return state.transactions.filter(t => {
-      const tDate = new Date(t.date + 'T00:00:00');
+      const tDate = parseDateSafely(t.date);
       
       // Filtro de Tempo
       if (state.filterTimeframe === 'weekly') {
@@ -307,7 +325,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     elements.transactionsTableBody.innerHTML = transactions.map(t => {
       const catObj = state.categories.find(c => c.id === t.category_id) || { name: 'Sem Categoria', color: '#64748b' };
-      const formattedDate = new Date(t.date + 'T00:00:00').toLocaleDateString('pt-BR');
+      const formattedDate = parseDateSafely(t.date).toLocaleDateString('pt-BR');
       const isIncome = t.type === 'income';
 
       return `
@@ -812,7 +830,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const weeklyExpenses = state.transactions.filter(t => {
       if (t.type !== 'expense') return false;
-      const tDate = new Date(t.date + 'T00:00:00');
+      const tDate = parseDateSafely(t.date);
       return tDate >= past7Days && tDate <= today;
     });
 
@@ -888,7 +906,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     if (topDayDate) {
-      const dObj = new Date(topDayDate + 'T00:00:00');
+      const dObj = parseDateSafely(topDayDate);
       const dayNameFormatted = dObj.toLocaleDateString('pt-BR', { weekday: 'long' });
       const dayCapitalized = dayNameFormatted.charAt(0).toUpperCase() + dayNameFormatted.slice(1);
 
@@ -1183,8 +1201,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   elements.supabaseStatusBtn.addEventListener('click', () => {
-    document.getElementById('sp-url').value = localStorage.getItem('novo_controle_sp_url') || 'https://jmbeyxsdjkibqhqcizcz.supabase.co';
-    document.getElementById('sp-key').value = localStorage.getItem('novo_controle_sp_key') || 'sb_publishable_3dQhzQuU1cPdEzKGi1WYSQ_84NIpVnF';
+    document.getElementById('sp-url').value = safeGetItem('novo_controle_sp_url') || 'https://jmbeyxsdjkibqhqcizcz.supabase.co';
+    document.getElementById('sp-key').value = safeGetItem('novo_controle_sp_key') || 'sb_publishable_3dQhzQuU1cPdEzKGi1WYSQ_84NIpVnF';
     openModal(elements.modalSupabase);
   });
 

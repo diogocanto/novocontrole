@@ -3,6 +3,21 @@
  * Gera relatórios profissionais em PDF para gastos Semanais e Mensais
  */
 
+function parseDateSafely(dateStr) {
+  if (!dateStr) return new Date();
+  if (dateStr instanceof Date) return dateStr;
+  const cleanStr = String(dateStr).split('T')[0];
+  const parts = cleanStr.split('-');
+  if (parts.length === 3) {
+    const y = parseInt(parts[0], 10);
+    const m = parseInt(parts[1], 10) - 1;
+    const d = parseInt(parts[2], 10);
+    if (!isNaN(y) && !isNaN(m) && !isNaN(d)) return new Date(y, m, d);
+  }
+  const d = new Date(dateStr);
+  return isNaN(d.getTime()) ? new Date() : d;
+}
+
 class PDFReportGenerator {
   generateReport(periodType, transactions, categories) {
     const today = new Date();
@@ -57,7 +72,7 @@ class PDFReportGenerator {
     // Linhas da tabela de transações
     const txTableRows = filteredTx.map(t => {
       const catObj = categories.find(c => c.id === t.category_id) || { name: 'Geral' };
-      const dateFormatted = new Date(t.date + 'T00:00:00').toLocaleDateString('pt-BR');
+      const dateFormatted = parseDateSafely(t.date).toLocaleDateString('pt-BR');
       const isIncome = t.type === 'income';
       return `
         <tr>

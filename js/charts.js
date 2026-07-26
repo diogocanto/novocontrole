@@ -16,6 +16,11 @@ class FinanceCharts {
 
     if (this.categoryChart) {
       this.categoryChart.destroy();
+      this.categoryChart = null;
+    }
+    const existingCatChart = Chart.getChart(ctx);
+    if (existingCatChart) {
+      existingCatChart.destroy();
     }
 
     if (categoryBreakdown.length === 0) {
@@ -69,6 +74,11 @@ class FinanceCharts {
 
     if (this.trendChart) {
       this.trendChart.destroy();
+      this.trendChart = null;
+    }
+    const existingTrendChart = Chart.getChart(ctx);
+    if (existingTrendChart) {
+      existingTrendChart.destroy();
     }
 
     // Agrupa transações nos últimos 7 dias / 4 semanas
