@@ -297,7 +297,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (transactions.length === 0) {
       elements.transactionsTableBody.innerHTML = `
         <tr>
-          <td colspan="6" style="text-align: center; padding: 28px; color: var(--text-muted);">
+          <td colspan="7" style="text-align: center; padding: 28px; color: var(--text-muted);">
             Nenhuma transação encontrada para os filtros selecionados.
           </td>
         </tr>
@@ -331,7 +331,10 @@ document.addEventListener('DOMContentLoaded', async () => {
           </td>
           <td>
             <div class="action-btn-group">
-              <button class="action-btn delete" data-id="${t.id}" title="Excluir">
+              <button class="action-btn edit edit-tx-btn" data-id="${t.id}" title="Editar Transação">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="action-btn delete delete-tx-btn" data-id="${t.id}" title="Excluir Transação">
                 <i class="fas fa-trash"></i>
               </button>
             </div>
@@ -340,8 +343,32 @@ document.addEventListener('DOMContentLoaded', async () => {
       `;
     }).join('');
 
-    // Listener para botões de excluir
-    document.querySelectorAll('.action-btn.delete').forEach(btn => {
+    // Listener para botões de editar transação
+    document.querySelectorAll('.edit-tx-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = e.currentTarget.getAttribute('data-id');
+        const t = state.transactions.find(item => item.id === id);
+        if (!t) return;
+
+        document.getElementById('tx-edit-id').value = t.id;
+        document.getElementById('tx-desc').value = t.description || '';
+        document.getElementById('tx-amount').value = t.amount || '';
+        document.getElementById('tx-type').value = t.type || 'expense';
+        document.getElementById('tx-category').value = t.category_id || (state.categories[0] ? state.categories[0].id : '');
+        document.getElementById('tx-date').value = t.date ? t.date.split('T')[0] : new Date().toISOString().split('T')[0];
+        document.getElementById('tx-payment').value = t.payment_method || 'Pix';
+
+        const modalTitle = document.getElementById('modal-tx-title');
+        const submitBtn = document.getElementById('btn-submit-tx');
+        if (modalTitle) modalTitle.textContent = 'Editar Transação';
+        if (submitBtn) submitBtn.textContent = 'Salvar Alterações';
+
+        openModal(elements.modalTransaction);
+      });
+    });
+
+    // Listener para botões de excluir transação
+    document.querySelectorAll('.delete-tx-btn').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         const id = e.currentTarget.getAttribute('data-id');
         if (confirm('Tem certeza que deseja excluir esta transação?')) {
@@ -352,10 +379,102 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // 3. EVENT LISTENERS E GERENCIAMENTO DE MODAIS
-  // Submissão do Formulário de Nova Transação
+  // 3. GERENCIAMENTO DE CATEGORIAS E MODAIS
+  const modalCategoriesList = document.getElementById('modal-categories-list');
+  const categoriesTableBody = document.getElementById('categories-table-body');
+  const btnCreateNewCat = document.getElementById('btn-create-new-cat');
+
+  function renderCategoriesTable() {
+    if (!categoriesTableBody) return;
+    if (state.categories.length === 0) {
+      categoriesTableBody.innerHTML = `
+        <tr>
+          <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;">
+            Nenhuma categoria cadastrada.
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    categoriesTableBody.innerHTML = state.categories.map(c => `
+      <tr>
+        <td>
+          <span style="display: inline-block; width: 14px; height: 14px; border-radius: 50%; background: ${c.color || '#6366f1'};"></span>
+        </td>
+        <td><strong>${escapeHtml(c.name)}</strong></td>
+        <td>
+          <span class="type-pill ${c.type === 'income' ? 'income' : 'expense'}">
+            ${c.type === 'income' ? 'Receita' : 'Despesa'}
+          </span>
+        </td>
+        <td>${c.budget_limit ? formatCurrency(c.budget_limit) : 'Sem limite'}</td>
+        <td style="text-align: right;">
+          <div class="action-btn-group" style="justify-content: flex-end;">
+            <button class="action-btn edit edit-cat-btn" data-id="${c.id}" title="Editar Categoria">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="action-btn delete delete-cat-btn" data-id="${c.id}" title="Excluir Categoria">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+
+    // Listener para editar categoria
+    document.querySelectorAll('.edit-cat-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = e.currentTarget.dataset.id;
+        const cat = state.categories.find(item => item.id === id);
+        if (!cat) return;
+
+        document.getElementById('cat-edit-id').value = cat.id;
+        document.getElementById('cat-name').value = cat.name || '';
+        document.getElementById('cat-type').value = cat.type || 'expense';
+        document.getElementById('cat-color').value = cat.color || '#6366f1';
+        document.getElementById('cat-budget').value = cat.budget_limit || '';
+
+        const modalTitle = document.getElementById('modal-cat-title');
+        const submitBtn = document.getElementById('btn-submit-cat');
+        if (modalTitle) modalTitle.textContent = 'Editar Categoria';
+        if (submitBtn) submitBtn.textContent = 'Salvar Alterações';
+
+        closeModal(modalCategoriesList);
+        openModal(elements.modalCategory);
+      });
+    });
+
+    // Listener para excluir categoria
+    document.querySelectorAll('.delete-cat-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const id = e.currentTarget.dataset.id;
+        if (confirm('Tem certeza que deseja excluir esta categoria? As transações associadas passarão a ser exibidas como "Sem Categoria".')) {
+          await window.financeService.deleteCategory(id);
+          await loadData();
+          renderCategoriesTable();
+        }
+      });
+    });
+  }
+
+  if (btnCreateNewCat) {
+    btnCreateNewCat.addEventListener('click', () => {
+      document.getElementById('cat-edit-id').value = '';
+      elements.formCategory.reset();
+      const modalTitle = document.getElementById('modal-cat-title');
+      const submitBtn = document.getElementById('btn-submit-cat');
+      if (modalTitle) modalTitle.textContent = 'Criar Nova Categoria';
+      if (submitBtn) submitBtn.textContent = 'Salvar Categoria';
+      closeModal(modalCategoriesList);
+      openModal(elements.modalCategory);
+    });
+  }
+
+  // Submissão do Formulário de Transação (Criar / Editar)
   elements.formTransaction.addEventListener('submit', async (e) => {
     e.preventDefault();
+    const editId = document.getElementById('tx-edit-id').value;
     const desc = document.getElementById('tx-desc').value;
     const amount = document.getElementById('tx-amount').value;
     const type = document.getElementById('tx-type').value;
@@ -368,23 +487,32 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    await window.financeService.addTransaction({
+    const payload = {
       description: desc,
       amount: amount,
       type: type,
       category_id: category_id,
       date: date || new Date().toISOString().split('T')[0],
       payment_method: payment_method
-    });
+    };
+
+    if (editId) {
+      payload.id = editId;
+      await window.financeService.updateTransaction(payload);
+    } else {
+      await window.financeService.addTransaction(payload);
+    }
 
     elements.formTransaction.reset();
+    document.getElementById('tx-edit-id').value = '';
     closeModal(elements.modalTransaction);
     await loadData();
   });
 
-  // Submissão do Formulário de Nova Categoria
+  // Submissão do Formulário de Categoria (Criar / Editar)
   elements.formCategory.addEventListener('submit', async (e) => {
     e.preventDefault();
+    const editId = document.getElementById('cat-edit-id').value;
     const name = document.getElementById('cat-name').value;
     const type = document.getElementById('cat-type').value;
     const color = document.getElementById('cat-color').value;
@@ -392,16 +520,27 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (!name) return;
 
-    await window.financeService.addCategory({
+    const payload = {
       name: name,
       type: type,
       color: color,
       budget_limit: budget
-    });
+    };
+
+    if (editId) {
+      payload.id = editId;
+      await window.financeService.updateCategory(payload);
+    } else {
+      await window.financeService.addCategory(payload);
+    }
 
     elements.formCategory.reset();
+    document.getElementById('cat-edit-id').value = '';
     closeModal(elements.modalCategory);
     await loadData();
+    if (modalCategoriesList && modalCategoriesList.classList.contains('active')) {
+      renderCategoriesTable();
+    }
   });
 
   // Configuração do Supabase
@@ -952,11 +1091,16 @@ document.addEventListener('DOMContentLoaded', async () => {
               ${state.categories.map(c => `<option value="${c.id}" ${c.id === tx.category_id ? 'selected' : ''}>${c.name}</option>`).join('')}
             </select>
           </td>
+          <td style="text-align: center;">
+            <button type="button" class="action-btn delete btn-remove-import" data-index="${idx}" title="Remover este lançamento">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
         </tr>
       `;
     }).join('');
 
-    // Eventos de Checkbox e Categoria
+    // Eventos de Checkbox, Categoria e Remoção
     document.querySelectorAll('.check-import-item').forEach(chk => {
       chk.addEventListener('change', (e) => {
         const idx = e.target.dataset.index;
@@ -968,6 +1112,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       sel.addEventListener('change', (e) => {
         const idx = e.target.dataset.index;
         parsedBankTransactions[idx].category_id = e.target.value;
+      });
+    });
+
+    document.querySelectorAll('.btn-remove-import').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const idx = parseInt(e.currentTarget.dataset.index, 10);
+        parsedBankTransactions.splice(idx, 1);
+        renderImportPreview();
       });
     });
   }
@@ -1035,6 +1187,59 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('sp-key').value = localStorage.getItem('novo_controle_sp_key') || 'sb_publishable_3dQhzQuU1cPdEzKGi1WYSQ_84NIpVnF';
     openModal(elements.modalSupabase);
   });
+
+  // Botões do Cabeçalho e Navegação Lateral
+  const btnOpenTxModal = document.getElementById('btn-open-tx-modal');
+  if (btnOpenTxModal) {
+    btnOpenTxModal.addEventListener('click', () => {
+      document.getElementById('tx-edit-id').value = '';
+      elements.formTransaction.reset();
+      document.getElementById('tx-date').value = new Date().toISOString().split('T')[0];
+      const modalTitle = document.getElementById('modal-tx-title');
+      const submitBtn = document.getElementById('btn-submit-tx');
+      if (modalTitle) modalTitle.textContent = 'Adicionar Transação';
+      if (submitBtn) submitBtn.textContent = 'Salvar Transação';
+      openModal(elements.modalTransaction);
+    });
+  }
+
+  const btnOpenCatModal = document.getElementById('btn-open-cat-modal');
+  if (btnOpenCatModal) {
+    btnOpenCatModal.addEventListener('click', () => {
+      renderCategoriesTable();
+      openModal(modalCategoriesList);
+    });
+  }
+
+  const btnOpenPdfModal = document.getElementById('btn-open-pdf-modal');
+  if (btnOpenPdfModal) {
+    btnOpenPdfModal.addEventListener('click', () => {
+      openModal(elements.modalPdf);
+    });
+  }
+
+  const navCategories = document.getElementById('nav-categories');
+  if (navCategories) {
+    navCategories.addEventListener('click', () => {
+      renderCategoriesTable();
+      openModal(modalCategoriesList);
+    });
+  }
+
+  const navTransactions = document.getElementById('nav-transactions');
+  if (navTransactions) {
+    navTransactions.addEventListener('click', () => {
+      const txSection = document.querySelector('.transactions-section');
+      if (txSection) txSection.scrollIntoView({ behavior: 'smooth' });
+    });
+  }
+
+  const navDashboard = document.getElementById('nav-dashboard');
+  if (navDashboard) {
+    navDashboard.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
 
   document.querySelectorAll('.modal-close, .btn-modal-cancel').forEach(btn => {
     btn.addEventListener('click', (e) => {

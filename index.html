@@ -345,10 +345,11 @@
   <div id="modal-transaction" class="modal-overlay">
     <div class="modal-card">
       <div class="modal-header">
-        <h3>Adicionar Transação</h3>
+        <h3 id="modal-tx-title">Adicionar Transação</h3>
         <button class="modal-close">&times;</button>
       </div>
       <form id="form-transaction">
+        <input type="hidden" id="tx-edit-id" value="">
         <div class="form-group">
           <label for="tx-desc">Descrição</label>
           <input type="text" id="tx-desc" class="form-control" placeholder="Ex: Supermercado, Aluguel, Salário"
@@ -395,7 +396,7 @@
 
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary btn-modal-cancel">Cancelar</button>
-          <button type="submit" class="btn btn-primary">Salvar Transação</button>
+          <button type="submit" id="btn-submit-tx" class="btn btn-primary">Salvar Transação</button>
         </div>
       </form>
     </div>
@@ -405,10 +406,11 @@
   <div id="modal-category" class="modal-overlay">
     <div class="modal-card">
       <div class="modal-header">
-        <h3>Criar Nova Categoria</h3>
+        <h3 id="modal-cat-title">Criar Nova Categoria</h3>
         <button class="modal-close">&times;</button>
       </div>
       <form id="form-category">
+        <input type="hidden" id="cat-edit-id" value="">
         <div class="form-group">
           <label for="cat-name">Nome da Categoria</label>
           <input type="text" id="cat-name" class="form-control" placeholder="Ex: Viagens, Assinaturas, Cursos" required>
@@ -435,9 +437,55 @@
 
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary btn-modal-cancel">Cancelar</button>
-          <button type="submit" class="btn btn-primary">Salvar Categoria</button>
+          <button type="submit" id="btn-submit-cat" class="btn btn-primary">Salvar Categoria</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- MODAL: GERENCIAR CATEGORIAS -->
+  <div id="modal-categories-list" class="modal-overlay">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div class="brand-logo" style="width: 36px; height: 36px; font-size: 1rem; background: var(--accent-primary-gradient);">
+            <i class="fas fa-tags"></i>
+          </div>
+          <div>
+            <h3>Gerenciar Categorias</h3>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">Edite ou exclua suas categorias personalizadas</p>
+          </div>
+        </div>
+        <button class="modal-close">&times;</button>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin: 16px 0 12px 0;">
+        <span style="font-size: 0.88rem; color: var(--text-secondary); font-weight: 600;">Categorias Cadastradas</span>
+        <button type="button" id="btn-create-new-cat" class="btn btn-primary btn-sm">
+          <i class="fas fa-plus"></i> Nova Categoria
+        </button>
+      </div>
+
+      <div class="table-container" style="max-height: 300px; overflow-y: auto;">
+        <table class="data-table" style="font-size: 0.88rem;">
+          <thead>
+            <tr>
+              <th>Cor</th>
+              <th>Nome</th>
+              <th>Tipo</th>
+              <th>Limite Mensal</th>
+              <th style="text-align: right;">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="categories-table-body">
+            <!-- Renderizado via app.js -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="modal-footer" style="margin-top: 20px;">
+        <button type="button" class="btn btn-secondary btn-modal-cancel">Fechar</button>
+      </div>
     </div>
   </div>
 
@@ -726,6 +774,7 @@
                 <th>Descrição</th>
                 <th>Valor</th>
                 <th>Categoria Sugerida</th>
+                <th style="width: 60px; text-align: center;">Ação</th>
               </tr>
             </thead>
             <tbody id="import-preview-body">

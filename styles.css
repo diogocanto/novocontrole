@@ -682,6 +682,11 @@ body {
   background: rgba(255, 255, 255, 0.1);
 }
 
+.action-btn.edit:hover {
+  color: var(--accent-primary);
+  background: rgba(99, 102, 241, 0.15);
+}
+
 .action-btn.delete:hover {
   color: var(--accent-red);
   background: var(--accent-red-bg);

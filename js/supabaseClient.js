@@ -252,6 +252,65 @@ class FinanceService {
     return newCat;
   }
 
+  async updateCategory(category) {
+    if (this.isSupabaseConnected && isUUID(category.id)) {
+      const payload = {
+        name: category.name,
+        type: category.type,
+        color: category.color || '#6366f1',
+        budget_limit: parseFloat(category.budget_limit) || 0
+      };
+      const { data, error } = await this.supabase
+        .from('categories')
+        .update(payload)
+        .eq('id', category.id)
+        .select();
+
+      if (error) {
+        console.error('❌ Erro Supabase ao atualizar categoria:', error);
+      } else if (data && data.length > 0) {
+        console.log('✅ Categoria atualizada no Supabase:', data[0]);
+        return data[0];
+      }
+    }
+
+    // LocalStorage Fallback
+    const categories = await this.getCategories();
+    const index = categories.findIndex(c => c.id === category.id);
+    if (index !== -1) {
+      categories[index] = {
+        ...categories[index],
+        name: category.name,
+        type: category.type,
+        color: category.color || '#6366f1',
+        budget_limit: parseFloat(category.budget_limit) || 0
+      };
+      localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(categories));
+      return categories[index];
+    }
+    return category;
+  }
+
+  async deleteCategory(id) {
+    if (this.isSupabaseConnected && isUUID(id)) {
+      const { error } = await this.supabase
+        .from('categories')
+        .delete()
+        .eq('id', id);
+      if (error) {
+        console.error('❌ Erro Supabase ao deletar categoria:', error);
+      } else {
+        return true;
+      }
+    }
+
+    // LocalStorage Fallback
+    let categories = await this.getCategories();
+    categories = categories.filter(c => c.id !== id);
+    localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(categories));
+    return true;
+  }
+
   // --- TRANSAÇÕES ---
   async getTransactions() {
     if (this.isSupabaseConnected) {
@@ -328,6 +387,58 @@ class FinanceService {
     txs.unshift(newTx);
     localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(txs));
     return newTx;
+  }
+
+  async updateTransaction(transaction) {
+    if (this.isSupabaseConnected && isUUID(transaction.id)) {
+      const payload = {
+        description: transaction.description,
+        amount: parseFloat(transaction.amount),
+        type: transaction.type,
+        date: transaction.date || new Date().toISOString().split('T')[0],
+        payment_method: transaction.payment_method || 'Pix',
+        notes: transaction.notes || ''
+      };
+
+      if (isUUID(transaction.category_id)) {
+        payload.category_id = transaction.category_id;
+      } else {
+        payload.category_id = null;
+      }
+
+      const { data, error } = await this.supabase
+        .from('transactions')
+        .update(payload)
+        .eq('id', transaction.id)
+        .select('*, categories(*)');
+
+      if (error) {
+        console.error('❌ Erro Supabase ao atualizar transação:', error);
+        alert('Erro ao atualizar transação no Supabase: ' + error.message);
+      } else if (data && data.length > 0) {
+        console.log('✅ Transação atualizada no Supabase:', data[0]);
+        return data[0];
+      }
+    }
+
+    // LocalStorage Fallback
+    const txs = await this.getTransactions();
+    const index = txs.findIndex(t => t.id === transaction.id);
+    if (index !== -1) {
+      txs[index] = {
+        ...txs[index],
+        description: transaction.description,
+        amount: parseFloat(transaction.amount),
+        type: transaction.type,
+        category_id: transaction.category_id,
+        date: transaction.date || new Date().toISOString().split('T')[0],
+        payment_method: transaction.payment_method || 'Pix',
+        notes: transaction.notes || ''
+      };
+      localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(txs));
+      return txs[index];
+    }
+    return transaction;
   }
 
   async deleteTransaction(id) {
