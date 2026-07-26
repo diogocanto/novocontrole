@@ -193,6 +193,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       window.financeCharts.renderCategoryPercentageChart('chart-categories', categoryData);
       window.financeCharts.renderTrendChart('chart-trend', state.transactions);
     }
+
+    // Atualiza o painel "Onde Mais Gastei Nesta Semana"
+    updateWeeklyHighlights();
   }
 
   // Filtra transações por período, tipo, categoria e busca
@@ -644,6 +647,388 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('btn-open-pdf-modal').addEventListener('click', () => {
     openModal(elements.modalPdf);
   });
+
+  // ==========================================================================
+  // CÁLCULO & EXIBIÇÃO: ONDE MAIS GASTEI NESTA SEMANA (ÚLTIMOS 7 DIAS)
+  // ==========================================================================
+  function updateWeeklyHighlights() {
+    const weeklySingleAmount = document.getElementById('weekly-top-single-amount');
+    const weeklySingleDesc = document.getElementById('weekly-top-single-desc');
+    const weeklySingleTag = document.getElementById('weekly-top-single-tag');
+
+    const weeklyCatAmount = document.getElementById('weekly-top-cat-amount');
+    const weeklyCatName = document.getElementById('weekly-top-cat-name');
+    const weeklyCatPercent = document.getElementById('weekly-top-cat-percent');
+
+    const weeklyDayName = document.getElementById('weekly-top-day-name');
+    const weeklyDayAmount = document.getElementById('weekly-top-day-amount');
+    const weeklyDayBadge = document.getElementById('weekly-top-day-badge');
+
+    const rankingContainer = document.getElementById('weekly-top-ranking-list');
+
+    // Transações de despesas nos últimos 7 dias
+    const today = new Date();
+    const past7Days = new Date();
+    past7Days.setDate(today.getDate() - 7);
+
+    const weeklyExpenses = state.transactions.filter(t => {
+      if (t.type !== 'expense') return false;
+      const tDate = new Date(t.date + 'T00:00:00');
+      return tDate >= past7Days && tDate <= today;
+    });
+
+    const totalWeeklyExpenseSum = weeklyExpenses.reduce((sum, t) => sum + parseFloat(t.amount), 0);
+
+    if (weeklyExpenses.length === 0) {
+      if (weeklySingleAmount) weeklySingleAmount.textContent = formatCurrency(0);
+      if (weeklySingleDesc) weeklySingleDesc.textContent = 'Nenhum gasto nos últimos 7 dias';
+      if (weeklySingleTag) weeklySingleTag.textContent = 'Sem registros';
+
+      if (weeklyCatAmount) weeklyCatAmount.textContent = formatCurrency(0);
+      if (weeklyCatName) weeklyCatName.textContent = 'Nenhuma categoria';
+      if (weeklyCatPercent) weeklyCatPercent.textContent = '0% dos gastos da semana';
+
+      if (weeklyDayName) weeklyDayName.textContent = '--';
+      if (weeklyDayAmount) weeklyDayAmount.textContent = 'Total: R$ 0,00';
+      if (weeklyDayBadge) weeklyDayBadge.textContent = 'Sem pico registrado';
+
+      if (rankingContainer) {
+        rankingContainer.innerHTML = `
+          <div style="text-align: center; color: var(--text-muted); padding: 18px; font-size: 0.88rem; background: rgba(255, 255, 255, 0.02); border-radius: 8px;">
+            <i class="fas fa-info-circle" style="color: var(--accent-primary); margin-right: 6px;"></i>
+            Nenhuma despesa encontrada nos últimos 7 dias. Importe seu extrato bancário para visualizar os maiores gastos!
+          </div>`;
+      }
+      return;
+    }
+
+    // 1. Maior Gasto Individual da Semana
+    const sortedByAmount = [...weeklyExpenses].sort((a, b) => parseFloat(b.amount) - parseFloat(a.amount));
+    const topSingle = sortedByAmount[0];
+    const topSingleCat = state.categories.find(c => c.id === topSingle.category_id);
+
+    if (weeklySingleAmount) weeklySingleAmount.textContent = formatCurrency(parseFloat(topSingle.amount));
+    if (weeklySingleDesc) weeklySingleDesc.textContent = topSingle.description;
+    if (weeklySingleTag) weeklySingleTag.textContent = `${topSingleCat ? topSingleCat.name : 'Despesa'} • ${formatDateBR(topSingle.date)}`;
+
+    // 2. Categoria Campeã da Semana
+    const categorySums = {};
+    weeklyExpenses.forEach(t => {
+      categorySums[t.category_id] = (categorySums[t.category_id] || 0) + parseFloat(t.amount);
+    });
+
+    let topCatId = null;
+    let topCatMax = 0;
+    Object.keys(categorySums).forEach(catId => {
+      if (categorySums[catId] > topCatMax) {
+        topCatMax = categorySums[catId];
+        topCatId = catId;
+      }
+    });
+
+    const topCatObj = state.categories.find(c => c.id === topCatId) || { name: 'Compras', color: '#6366f1' };
+    const topCatPercent = totalWeeklyExpenseSum > 0 ? ((topCatMax / totalWeeklyExpenseSum) * 100).toFixed(1) : '0';
+
+    if (weeklyCatAmount) weeklyCatAmount.textContent = formatCurrency(topCatMax);
+    if (weeklyCatName) weeklyCatName.textContent = topCatObj.name;
+    if (weeklyCatPercent) weeklyCatPercent.textContent = `${topCatPercent}% de todos os gastos da semana`;
+
+    // 3. Dia de Maior Pico de Despesas
+    const daySums = {};
+    weeklyExpenses.forEach(t => {
+      daySums[t.date] = (daySums[t.date] || 0) + parseFloat(t.amount);
+    });
+
+    let topDayDate = null;
+    let topDayMax = 0;
+    Object.keys(daySums).forEach(d => {
+      if (daySums[d] > topDayMax) {
+        topDayMax = daySums[d];
+        topDayDate = d;
+      }
+    });
+
+    if (topDayDate) {
+      const dObj = new Date(topDayDate + 'T00:00:00');
+      const dayNameFormatted = dObj.toLocaleDateString('pt-BR', { weekday: 'long' });
+      const dayCapitalized = dayNameFormatted.charAt(0).toUpperCase() + dayNameFormatted.slice(1);
+
+      if (weeklyDayName) weeklyDayName.textContent = dayCapitalized;
+      if (weeklyDayAmount) weeklyDayAmount.textContent = `Total no dia: ${formatCurrency(topDayMax)}`;
+      if (weeklyDayBadge) weeklyDayBadge.textContent = `${formatDateBR(topDayDate)} (Pico Semanal)`;
+    }
+
+    // 4. Ranking Top 5 Gastos da Semana
+    const top5 = sortedByAmount.slice(0, 5);
+    const maxValForBar = parseFloat(top5[0].amount) || 1;
+
+    if (rankingContainer) {
+      rankingContainer.innerHTML = top5.map((item, index) => {
+        const cat = state.categories.find(c => c.id === item.category_id);
+        const percentBar = ((parseFloat(item.amount) / maxValForBar) * 100).toFixed(1);
+        const catName = cat ? cat.name : 'Outros';
+        const rankClass = index === 0 ? 'top-1' : '';
+
+        return `
+          <div class="weekly-ranking-item">
+            <div class="weekly-ranking-rank ${rankClass}">#${index + 1}</div>
+            <div class="weekly-ranking-info">
+              <div class="weekly-ranking-title-row">
+                <span class="weekly-ranking-title" title="${escapeHtml(item.description)}">${escapeHtml(item.description)} <small style="color: var(--text-muted); font-weight: normal;">(${catName} • ${formatDateBR(item.date)})</small></span>
+                <span class="weekly-ranking-amount">${formatCurrency(parseFloat(item.amount))}</span>
+              </div>
+              <div class="weekly-ranking-bar-bg">
+                <div class="weekly-ranking-bar-fill" style="width: ${percentBar}%;"></div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+
+  function formatDateBR(dateStr) {
+    if (!dateStr) return '';
+    const parts = dateStr.split('-');
+    if (parts.length === 3) return `${parts[2]}/${parts[1]}`;
+    return dateStr;
+  }
+
+  // ==========================================================================
+  // EVENTOS & CONTROLADORES DA MODAL DE BANCO E IMPORTAÇÃO (SOMENTE LEITURA)
+  // ==========================================================================
+  let parsedBankTransactions = [];
+
+  const btnOpenBankModal = document.getElementById('btn-open-bank-modal');
+  const navBankSync = document.getElementById('nav-bank-sync');
+  const modalBankImport = document.getElementById('modal-bank-import');
+  const tabBankFile = document.getElementById('tab-bank-file');
+  const tabBankOpenfinance = document.getElementById('tab-bank-openfinance');
+  const panelBankFile = document.getElementById('panel-bank-file');
+  const panelBankOpenfinance = document.getElementById('panel-bank-openfinance');
+  const bankFileInput = document.getElementById('bank-file-input');
+  const importDropzone = document.getElementById('import-dropzone');
+  const bankPasteInput = document.getElementById('bank-paste-input');
+  const btnParsePaste = document.getElementById('btn-parse-paste');
+  const importPreviewContainer = document.getElementById('import-preview-container');
+  const importPreviewBody = document.getElementById('import-preview-body');
+  const importCount = document.getElementById('import-count');
+  const checkAllImports = document.getElementById('check-all-imports');
+  const btnSaveImports = document.getElementById('btn-save-imports');
+
+  // Abrir Modal de Banco
+  if (btnOpenBankModal) {
+    btnOpenBankModal.addEventListener('click', () => openModal(modalBankImport));
+  }
+  if (navBankSync) {
+    navBankSync.addEventListener('click', () => openModal(modalBankImport));
+  }
+
+  // Alternar Abas na Modal de Banco
+  if (tabBankFile && tabBankOpenfinance) {
+    tabBankFile.addEventListener('click', () => {
+      tabBankFile.classList.add('active');
+      tabBankOpenfinance.classList.remove('active');
+      panelBankFile.style.display = 'block';
+      panelBankOpenfinance.style.display = 'none';
+    });
+
+    tabBankOpenfinance.addEventListener('click', () => {
+      tabBankOpenfinance.classList.add('active');
+      tabBankFile.classList.remove('active');
+      panelBankOpenfinance.style.display = 'block';
+      panelBankFile.style.display = 'none';
+    });
+  }
+
+  // Upload de Arquivos OFX / CSV
+  if (bankFileInput) {
+    bankFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) processBankFile(file);
+    });
+  }
+
+  // Drag & Drop no Dropzone
+  if (importDropzone) {
+    importDropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      importDropzone.style.borderColor = 'var(--accent-primary)';
+    });
+
+    importDropzone.addEventListener('dragleave', () => {
+      importDropzone.style.borderColor = 'rgba(99, 102, 241, 0.4)';
+    });
+
+    importDropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      importDropzone.style.borderColor = 'rgba(99, 102, 241, 0.4)';
+      const file = e.dataTransfer.files[0];
+      if (file) processBankFile(file);
+    });
+  }
+
+  function processBankFile(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target.result;
+      const fileName = file.name.toLowerCase();
+
+      if (fileName.endsWith('.ofx')) {
+        parsedBankTransactions = window.bankService.parseOFX(content, state.categories);
+      } else if (fileName.endsWith('.csv') || fileName.endsWith('.txt')) {
+        parsedBankTransactions = window.bankService.parseCSV(content, state.categories);
+      } else {
+        parsedBankTransactions = window.bankService.parsePastedText(content, state.categories);
+      }
+
+      renderImportPreview();
+    };
+    reader.readAsText(file);
+  }
+
+  // Processar Texto Colado do Extrato
+  if (btnParsePaste && bankPasteInput) {
+    btnParsePaste.addEventListener('click', () => {
+      const text = bankPasteInput.value.trim();
+      if (!text) {
+        alert('Cole o texto do extrato ou fatura bancária no campo para processar.');
+        return;
+      }
+      parsedBankTransactions = window.bankService.parsePastedText(text, state.categories);
+      renderImportPreview();
+    });
+  }
+
+  // Sincronizar via Open Finance (Seleção de Bancos)
+  document.querySelectorAll('.bank-select-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const bankId = btn.dataset.bank;
+      
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i><span>Consultando...</span>`;
+
+      try {
+        parsedBankTransactions = await window.bankService.fetchOpenFinanceTransactions(bankId, state.categories);
+        renderImportPreview();
+      } catch (err) {
+        alert('Erro ao consultar Open Finance: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
+    });
+  });
+
+  // Renderizar Tabela de Preview dos Lançamentos Encontrados
+  function renderImportPreview() {
+    if (!importPreviewContainer || !importPreviewBody) return;
+
+    if (parsedBankTransactions.length === 0) {
+      alert('Nenhuma transação foi identificada no arquivo/texto informado. Verifique o formato e tente novamente.');
+      importPreviewContainer.style.display = 'none';
+      return;
+    }
+
+    importCount.textContent = parsedBankTransactions.length;
+    importPreviewContainer.style.display = 'block';
+
+    importPreviewBody.innerHTML = parsedBankTransactions.map((tx, idx) => {
+      const isExpense = tx.type === 'expense';
+      const amountColor = isExpense ? 'var(--accent-red)' : 'var(--accent-green)';
+      const sign = isExpense ? '-' : '+';
+
+      return `
+        <tr>
+          <td style="text-align: center;">
+            <input type="checkbox" class="check-import-item" data-index="${idx}" ${tx.selected ? 'checked' : ''}>
+          </td>
+          <td>${formatDateBR(tx.date)}</td>
+          <td><strong>${escapeHtml(tx.description)}</strong></td>
+          <td style="color: ${amountColor}; font-weight: 700;">${sign} ${formatCurrency(tx.amount)}</td>
+          <td>
+            <select class="form-control select-import-cat" data-index="${idx}" style="padding: 4px 8px; font-size: 0.8rem;">
+              ${state.categories.map(c => `<option value="${c.id}" ${c.id === tx.category_id ? 'selected' : ''}>${c.name}</option>`).join('')}
+            </select>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    // Eventos de Checkbox e Categoria
+    document.querySelectorAll('.check-import-item').forEach(chk => {
+      chk.addEventListener('change', (e) => {
+        const idx = e.target.dataset.index;
+        parsedBankTransactions[idx].selected = e.target.checked;
+      });
+    });
+
+    document.querySelectorAll('.select-import-cat').forEach(sel => {
+      sel.addEventListener('change', (e) => {
+        const idx = e.target.dataset.index;
+        parsedBankTransactions[idx].category_id = e.target.value;
+      });
+    });
+  }
+
+  // Marcar/Desmarcar Todos
+  if (checkAllImports) {
+    checkAllImports.addEventListener('change', (e) => {
+      const isChecked = e.target.checked;
+      parsedBankTransactions.forEach(tx => tx.selected = isChecked);
+      document.querySelectorAll('.check-import-item').forEach(chk => chk.checked = isChecked);
+    });
+  }
+
+  // Salvar Transações Selecionadas no Supabase / LocalStorage
+  if (btnSaveImports) {
+    btnSaveImports.addEventListener('click', async () => {
+      const selected = parsedBankTransactions.filter(tx => tx.selected);
+
+      if (selected.length === 0) {
+        alert('Selecione pelo menos uma transação para importar.');
+        return;
+      }
+
+      btnSaveImports.disabled = true;
+      btnSaveImports.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Salvando...`;
+
+      try {
+        let countSaved = 0;
+        for (const tx of selected) {
+          const newTxData = {
+            description: tx.description,
+            amount: parseFloat(tx.amount),
+            type: tx.type,
+            category_id: tx.category_id,
+            date: tx.date,
+            payment_method: tx.payment_method || 'Cartão de Débito'
+          };
+
+          await window.financeService.addTransaction(newTxData);
+          countSaved++;
+        }
+
+        alert(`✅ ${countSaved} transações foram importadas e registradas com sucesso!`);
+        closeModal(modalBankImport);
+        
+        // Reseta o estado do modal
+        parsedBankTransactions = [];
+        importPreviewContainer.style.display = 'none';
+        if (bankPasteInput) bankPasteInput.value = '';
+
+        // Recarrega todos os dados
+        await loadData();
+      } catch (err) {
+        console.error('Erro ao importar transações:', err);
+        alert('Ocorreu um erro ao salvar as transações: ' + err.message);
+      } finally {
+        btnSaveImports.disabled = false;
+        btnSaveImports.innerHTML = `<i class="fas fa-download"></i> Confirmar Importação`;
+      }
+    });
+  }
 
   elements.supabaseStatusBtn.addEventListener('click', () => {
     document.getElementById('sp-url').value = localStorage.getItem('novo_controle_sp_url') || 'https://jmbeyxsdjkibqhqcizcz.supabase.co';

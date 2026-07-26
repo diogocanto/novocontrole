@@ -1334,3 +1334,259 @@ body {
   display: none !important;
 }
 
+/* ==========================================================================
+   ESTILOS: MAIORES GASTOS DA SEMANA & INTEGRAÇÃO BANCÁRIA
+   ========================================================================== */
+
+/* Botão de Destaque para Banco */
+.btn-bank-accent {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: #ffffff;
+  border: none;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+  transition: all var(--transition-normal);
+}
+.btn-bank-accent:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+  color: #ffffff;
+}
+
+/* Grid de Cards dos Destaques da Semana */
+.weekly-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.weekly-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform var(--transition-fast), border-color var(--transition-fast);
+}
+
+.weekly-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.weekly-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.weekly-card-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.weekly-card-value {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.weekly-card-subtext {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.weekly-card-badge {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-secondary);
+  width: fit-content;
+}
+
+/* Ranking dos Maiores Gastos da Semana */
+.weekly-ranking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.weekly-ranking-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast);
+}
+
+.weekly-ranking-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.weekly-ranking-rank {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(99, 102, 241, 0.15);
+  color: var(--accent-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.weekly-ranking-rank.top-1 {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+}
+
+.weekly-ranking-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.weekly-ranking-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.weekly-ranking-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.weekly-ranking-amount {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--accent-red);
+  margin-left: 10px;
+}
+
+.weekly-ranking-bar-bg {
+  height: 6px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.weekly-ranking-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ef4444, #f59e0b);
+  border-radius: 3px;
+}
+
+/* Modal de Banco e Segurança */
+.modal-lg {
+  max-width: 680px;
+  width: 90%;
+}
+
+.security-banner-read-only {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.security-banner-read-only strong {
+  color: var(--accent-green);
+  font-size: 0.88rem;
+  display: block;
+}
+
+.security-banner-read-only p {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  margin: 2px 0 0 0;
+  line-height: 1.35;
+}
+
+.import-dropzone {
+  border: 2px dashed rgba(99, 102, 241, 0.4);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  text-align: center;
+  background: rgba(99, 102, 241, 0.03);
+  transition: all var(--transition-normal);
+  cursor: pointer;
+}
+
+.import-dropzone:hover {
+  border-color: var(--accent-primary);
+  background: rgba(99, 102, 241, 0.08);
+}
+
+.banks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 12px;
+}
+
+.bank-select-btn {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 14px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.bank-select-btn i {
+  font-size: 1.5rem;
+  color: var(--bank-color, var(--accent-primary));
+}
+
+.bank-select-btn span {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.bank-select-btn small {
+  font-size: 0.72rem;
+  color: var(--accent-green);
+}
+
+.bank-select-btn:hover {
+  transform: translateY(-2px);
+  border-color: var(--bank-color, var(--accent-primary));
+  background: rgba(255, 255, 255, 0.07);
+}
+
