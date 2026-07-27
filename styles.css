@@ -746,6 +746,8 @@ button, input, select, textarea, a, .btn {
 .modal-overlay.active {
   opacity: 1;
   visibility: visible;
+  display: flex !important;
+  pointer-events: auto;
 }
 
 .modal-card {

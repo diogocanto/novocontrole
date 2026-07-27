@@ -211,6 +211,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (appLayout) appLayout.classList.remove('auth-hidden');
       if (elements.modalAuth) {
         elements.modalAuth.classList.remove('active', 'forced-auth');
+        elements.modalAuth.style.opacity = '';
+        elements.modalAuth.style.visibility = '';
+        elements.modalAuth.style.display = '';
       }
       if (elements.btnOpenAuthModal) elements.btnOpenAuthModal.style.display = 'none';
       if (elements.userInfoLogged) elements.userInfoLogged.style.display = 'flex';
@@ -224,6 +227,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (elements.btnOpenAuthModal) elements.btnOpenAuthModal.style.display = 'flex';
       if (elements.modalAuth) {
         elements.modalAuth.classList.add('active', 'forced-auth');
+        elements.modalAuth.style.opacity = '1';
+        elements.modalAuth.style.visibility = 'visible';
+        elements.modalAuth.style.display = 'flex';
       }
       return false;
     }
@@ -1393,12 +1399,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function openModal(modal) {
     if (modal) {
+      const sidebar = document.getElementById('sidebar');
+      const sidebarOverlay = document.getElementById('sidebar-overlay');
+      if (sidebar && sidebar.classList.contains('mobile-open')) {
+        sidebar.classList.remove('mobile-open');
+        if (sidebarOverlay) sidebarOverlay.classList.remove('active');
+      }
       modal.classList.add('active');
       modal.style.opacity = '1';
       modal.style.visibility = 'visible';
-      if (modal.id === 'modal-transaction') {
-        modal.style.display = 'flex';
-      }
+      modal.style.display = 'flex';
     }
   }
 
@@ -1410,9 +1420,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       modal.classList.remove('active');
       modal.style.opacity = '';
       modal.style.visibility = '';
-      if (modal.id === 'modal-transaction') {
-        modal.style.display = '';
-      }
+      modal.style.display = '';
     }
   }
 
