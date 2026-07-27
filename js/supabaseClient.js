@@ -115,8 +115,16 @@ class FinanceService {
   }
 
   initSupabaseClient() {
-    const url = safeStorage.getItem(STORAGE_KEYS.SUPABASE_URL) || DEFAULT_SUPABASE_URL;
-    const key = safeStorage.getItem(STORAGE_KEYS.SUPABASE_KEY) || DEFAULT_SUPABASE_KEY;
+    let url = safeStorage.getItem(STORAGE_KEYS.SUPABASE_URL);
+    let key = safeStorage.getItem(STORAGE_KEYS.SUPABASE_KEY);
+
+    // Se as chaves não estiverem no storage ou forem inválidas, garante o uso das chaves padrão do projeto
+    if (!url || !url.startsWith('http') || !key || key === 'undefined' || key === 'null') {
+      url = DEFAULT_SUPABASE_URL;
+      key = DEFAULT_SUPABASE_KEY;
+      safeStorage.setItem(STORAGE_KEYS.SUPABASE_URL, url);
+      safeStorage.setItem(STORAGE_KEYS.SUPABASE_KEY, key);
+    }
 
     if (url && key && window.supabase) {
       try {
@@ -124,12 +132,26 @@ class FinanceService {
         this.isSupabaseConnected = true;
         console.log('✅ Supabase conectado com sucesso!');
       } catch (err) {
-        console.warn('⚠️ Falha ao inicializar Supabase, usando LocalStorage:', err);
-        this.isSupabaseConnected = false;
+        console.warn('⚠️ Falha ao inicializar Supabase, usando chaves padrão:', err);
+        try {
+          this.supabase = window.supabase.createClient(DEFAULT_SUPABASE_URL, DEFAULT_SUPABASE_KEY);
+          this.isSupabaseConnected = true;
+          safeStorage.setItem(STORAGE_KEYS.SUPABASE_URL, DEFAULT_SUPABASE_URL);
+          safeStorage.setItem(STORAGE_KEYS.SUPABASE_KEY, DEFAULT_SUPABASE_KEY);
+        } catch (e) {
+          this.isSupabaseConnected = false;
+        }
       }
     } else {
       this.isSupabaseConnected = false;
     }
+  }
+
+  ensureConnected() {
+    if (!this.isSupabaseConnected && window.supabase) {
+      this.initSupabaseClient();
+    }
+    return this.isSupabaseConnected;
   }
 
   saveCredentials(url, key) {
@@ -142,6 +164,7 @@ class FinanceService {
 
   // --- AUTENTICAÇÃO SUPABASE ---
   async signUp(email, password) {
+    this.ensureConnected();
     if (!this.isSupabaseConnected) {
       throw new Error('Supabase não está conectado.');
     }
@@ -154,6 +177,7 @@ class FinanceService {
   }
 
   async signIn(email, password) {
+    this.ensureConnected();
     if (!this.isSupabaseConnected) {
       throw new Error('Supabase não está conectado.');
     }
@@ -166,12 +190,14 @@ class FinanceService {
   }
 
   async signOut() {
+    this.ensureConnected();
     if (!this.isSupabaseConnected) return;
     const { error } = await this.supabase.auth.signOut();
     if (error) console.error('Erro no logout:', error);
   }
 
   async getCurrentUser() {
+    this.ensureConnected();
     if (!this.isSupabaseConnected) return null;
     try {
       const { data: { user } } = await this.supabase.auth.getUser();
@@ -182,6 +208,7 @@ class FinanceService {
   }
 
   async getSession() {
+    this.ensureConnected();
     if (!this.isSupabaseConnected) return null;
     try {
       const { data: { session } } = await this.supabase.auth.getSession();
@@ -192,6 +219,7 @@ class FinanceService {
   }
 
   onAuthStateChange(callback) {
+    this.ensureConnected();
     if (!this.isSupabaseConnected) return null;
     return this.supabase.auth.onAuthStateChange((event, session) => {
       callback(event, session);
@@ -200,6 +228,7 @@ class FinanceService {
 
   // --- CATEGORIAS ---
   async getCategories() {
+    this.ensureConnected();
     if (this.isSupabaseConnected) {
       const { data, error } = await this.supabase
         .from('categories')
@@ -236,6 +265,7 @@ class FinanceService {
   }
 
   async addCategory(category) {
+    this.ensureConnected();
     if (this.isSupabaseConnected) {
       const user = await this.getCurrentUser();
       const payload = {
@@ -281,6 +311,7 @@ class FinanceService {
   }
 
   async updateCategory(category) {
+    this.ensureConnected();
     if (this.isSupabaseConnected && isUUID(category.id)) {
       const payload = {
         name: category.name,
@@ -320,6 +351,7 @@ class FinanceService {
   }
 
   async deleteCategory(id) {
+    this.ensureConnected();
     if (this.isSupabaseConnected && isUUID(id)) {
       const { error } = await this.supabase
         .from('categories')
@@ -341,6 +373,7 @@ class FinanceService {
 
   // --- TRANSAÇÕES ---
   async getTransactions() {
+    this.ensureConnected();
     if (this.isSupabaseConnected) {
       const { data, error } = await this.supabase
         .from('transactions')
@@ -363,6 +396,7 @@ class FinanceService {
   }
 
   async addTransaction(transaction) {
+    this.ensureConnected();
     if (this.isSupabaseConnected) {
       const user = await this.getCurrentUser();
       const payload = {
@@ -418,6 +452,7 @@ class FinanceService {
   }
 
   async updateTransaction(transaction) {
+    this.ensureConnected();
     if (this.isSupabaseConnected && isUUID(transaction.id)) {
       const payload = {
         description: transaction.description,
@@ -470,6 +505,7 @@ class FinanceService {
   }
 
   async deleteTransaction(id) {
+    this.ensureConnected();
     if (this.isSupabaseConnected) {
       if (isUUID(id)) {
         const { error } = await this.supabase

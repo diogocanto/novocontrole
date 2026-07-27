@@ -237,7 +237,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Atualiza indicador visual do Supabase no sidebar
   function updateSupabaseStatusUI() {
-    const isConnected = window.financeService.isSupabaseConnected;
+    const isConnected = window.financeService && window.financeService.ensureConnected ? window.financeService.ensureConnected() : window.financeService.isSupabaseConnected;
     if (isConnected) {
       elements.supabaseStatusDot.className = 'status-dot';
       elements.supabaseStatusText.textContent = 'Conectado';
