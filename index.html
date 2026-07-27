@@ -24,13 +24,32 @@
 
   <!-- PWA Manifest &amp; Icons -->
   <link rel="manifest" href="manifest.json">
-  <!-- apple-touch-icon: usado pelo Safari ao adicionar à Tela de Início -->
-  <link rel="apple-touch-icon" href="icon.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="icon.png">
-  <link rel="apple-touch-icon" sizes="152x152" href="icon.png">
-  <link rel="apple-touch-icon" sizes="120x120" href="icon.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="icon.png">
+  <!-- apple-touch-icon: usado pelo Safari ao adicionar à Tela de Início (iPhone / iPad / macOS) -->
+  <link rel="apple-touch-icon" href="icons/icon-180x180.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180x180.png">
+  <link rel="apple-touch-icon" sizes="167x167" href="icons/icon-167x167.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="icons/icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="128x128" href="icons/icon-128x128.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="icons/icon-120x120.png">
+
+  <!-- Favicons e ícones padrão para navegadores Desktop / Android (Chrome, Edge, Firefox, Safari) -->
+  <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512x512.png">
+  <link rel="icon" type="image/png" sizes="384x384" href="icons/icon-384x384.png">
+  <link rel="icon" type="image/png" sizes="256x256" href="icons/icon-256x256.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="128x128" href="icons/icon-128x128.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="icons/icon-96x96.png">
+  <link rel="icon" type="image/png" sizes="72x72" href="icons/icon-72x72.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="icons/icon-48x48.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16x16.png">
+  <link rel="shortcut icon" href="icons/icon-48x48.png">
+
+  <!-- Suporte Windows / Edge (Tiles) -->
+  <meta name="msapplication-TileColor" content="#090d16">
+  <meta name="msapplication-TileImage" content="icons/icon-144x144.png">
+  <meta name="msapplication-config" content="none">
 
   <!-- Fontes Google (carregadas uma única vez aqui no HTML, removido o @import do CSS) -->
   <!-- crossorigin="anonymous" necessário para preconnect funcionar corretamente -->
@@ -67,7 +86,7 @@
       </button>
       <div class="mobile-brand">
         <div class="brand-logo" style="width: 32px; height: 32px;">
-          <img src="icon.png" alt="NovoControle Logo">
+          <img src="icons/icon-128x128.png" alt="NovoControle Logo">
         </div>
         <span class="brand-title">NovoControle</span>
       </div>
@@ -85,7 +104,7 @@
         <div class="brand-header">
           <div style="display: flex; align-items: center; gap: 12px;">
             <div class="brand-logo">
-              <img src="icon.png" alt="NovoControle Logo">
+              <img src="icons/icon-128x128.png" alt="NovoControle Logo">
             </div>
             <span class="brand-title">NovoControle</span>
           </div>
@@ -536,7 +555,7 @@
       <div class="modal-header">
         <div class="auth-header-title">
           <div class="brand-logo" style="width: 36px; height: 36px;">
-            <img src="icon.png" alt="NovoControle Logo">
+            <img src="icons/icon-128x128.png" alt="NovoControle Logo">
           </div>
           <div>
             <h3>NovoControle</h3>
