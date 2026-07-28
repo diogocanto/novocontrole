@@ -166,7 +166,7 @@ class FinanceService {
   async signUp(email, password) {
     this.ensureConnected();
     if (!this.isSupabaseConnected) {
-      throw new Error('Supabase não está conectado.');
+      throw new Error('Serviço de autenticação não disponível no momento.');
     }
     const { data, error } = await this.supabase.auth.signUp({
       email: email.trim(),
@@ -179,7 +179,7 @@ class FinanceService {
   async signIn(email, password) {
     this.ensureConnected();
     if (!this.isSupabaseConnected) {
-      throw new Error('Supabase não está conectado.');
+      throw new Error('Serviço de autenticação não disponível no momento.');
     }
     const { data, error } = await this.supabase.auth.signInWithPassword({
       email: email.trim(),
@@ -426,7 +426,7 @@ class FinanceService {
 
       if (error) {
         console.error('❌ Erro Supabase ao inserir transação:', error.message || error.details || error.code || JSON.stringify(error));
-        alert('Aviso Supabase: ' + (error.message || 'Falha ao salvar no banco. Verifique se o schema.sql foi executado no SQL Editor do Supabase.'));
+        alert('Aviso: Não foi possível sincronizar com o servidor na nuvem. A transação foi salva localmente no seu dispositivo.');
       } else if (data && data.length > 0) {
         console.log('✅ Transação inserida com sucesso no Supabase:', data[0]);
         return data[0];
@@ -477,7 +477,7 @@ class FinanceService {
 
       if (error) {
         console.error('❌ Erro Supabase ao atualizar transação:', error);
-        alert('Erro ao atualizar transação no Supabase: ' + error.message);
+        alert('Aviso: Não foi possível atualizar no servidor da nuvem.');
       } else if (data && data.length > 0) {
         console.log('✅ Transação atualizada no Supabase:', data[0]);
         return data[0];

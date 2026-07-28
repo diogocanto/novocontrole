@@ -790,10 +790,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         elements.authAlertLogin.className = 'auth-alert error';
 
         let errorMessage = err.message || 'Falha ao realizar login. Verifique seu e-mail e senha.';
-        if (errorMessage.includes('Invalid login credentials')) {
-          errorMessage = 'E-mail ou senha incorretos. Se você acabou de criar sua conta, verifique se confirmou o e-mail na sua caixa de entrada (ou desative a confirmação de e-mail no painel do Supabase).';
+        if (errorMessage.includes('Invalid login credentials') || errorMessage.includes('invalid_grant')) {
+          errorMessage = 'E-mail ou senha incorretos. Verifique seus dados e tente novamente.';
         } else if (errorMessage.includes('Email not confirmed')) {
-          errorMessage = 'Seu e-mail ainda não foi confirmado. Acesse sua caixa de entrada e clique no link de confirmação enviado pelo Supabase.';
+          errorMessage = 'Seu e-mail ainda não foi confirmado. Acesse sua caixa de entrada e verifique o link de ativação.';
+        } else if (errorMessage.toLowerCase().includes('supabase') || errorMessage.toLowerCase().includes('fetch')) {
+          errorMessage = 'Erro de login: não foi possível conectar ao servidor no momento. Tente novamente mais tarde.';
         }
 
         elements.authAlertLogin.textContent = errorMessage;
@@ -848,13 +850,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Erro ao cadastrar usuário:', err);
         elements.authAlertRegister.className = 'auth-alert error';
 
-        let errorMessage = err.message || 'Erro ao criar conta no Supabase.';
+        let errorMessage = err.message || 'Erro ao criar conta no sistema.';
         if (errorMessage.includes('email rate limit exceeded')) {
-          errorMessage = 'Limite de envio de e-mails do Supabase excedido. Por favor, aguarde alguns minutos ou desative a opção "Confirm email" no painel do Supabase.';
+          errorMessage = 'Limite de solicitações excedido. Por favor, aguarde alguns minutos antes de tentar novamente.';
         } else if (errorMessage.includes('User already registered')) {
-          errorMessage = 'Este e-mail já está cadastrado no sistema. Tente fazer login ou use a opção de redefinição.';
+          errorMessage = 'Este e-mail já está cadastrado no sistema. Tente fazer login ou recuperar sua senha.';
         } else if (errorMessage.includes('Password should be at least')) {
           errorMessage = 'A senha deve conter no mínimo 6 caracteres.';
+        } else if (errorMessage.toLowerCase().includes('supabase') || errorMessage.toLowerCase().includes('fetch')) {
+          errorMessage = 'Erro no cadastro: não foi possível conectar ao servidor no momento. Tente novamente mais tarde.';
         }
 
         elements.authAlertRegister.textContent = errorMessage;
